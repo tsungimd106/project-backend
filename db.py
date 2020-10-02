@@ -55,5 +55,3 @@ class DB():
             print("資料庫連接失敗：", e)
             cursor.close()
             connection.close()
-
-    
