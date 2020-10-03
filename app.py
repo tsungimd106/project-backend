@@ -31,7 +31,6 @@ def line():
 
 @app.route('/', methods=["GET"])
 def home():
-    print("gigiigigigi")
     return 'good from backend'
 
 
