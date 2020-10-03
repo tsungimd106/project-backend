@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-import politican
+from politican import web
 
 __LYGOV_URL = "https://data.ly.gov.tw/odw/openDatasetJson.action?id=9&selectTerm=all&page=1"
 __PO_URL = "https://data.ly.gov.tw/odw/openDatasetJson.action?id=20&selectTerm=all&page="
@@ -23,7 +23,7 @@ def lygov():
         data = json.loads(str(soup))
         count = 0
         for i in data["jsonList"]:
-            politican.createlygov(i)
+            web.createlygov(i)
             print("_"*7)
             # _____________________
             count += 1
@@ -43,7 +43,7 @@ def po():
             # print(str(soup))
             count = 0
             for i in data["jsonList"]:
-                politican.createpo(i)
+                web.createpo(i)
                 print("_"*7)
                 # _____________________
                 count += 1
