@@ -43,10 +43,10 @@ class DB():
                 if(type == DB.create):
                     cursor.execute(sqlstr)
                     connection.commit()
-                elif(type == DB.select):
+                else:
                     cursor.execute(sqlstr)
                     rows = cursor.fetchall()
-                    return rows
+                    return rows                
                 cursor.close()
                 connection.close()
                 print("enter close")
