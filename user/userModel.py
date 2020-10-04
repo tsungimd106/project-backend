@@ -18,5 +18,6 @@ def changePassword(account,password):
 
 
 def sign(account, password, age, sex):
-    sqlstr = "INSERT INTO member(id, password,age,sex) VALUES (%s, %s ,%s ,%s)"% (account, password, age, sex)
+    sqlstr = "INSERT INTO member(id, password,age,sex) VALUES (%s, %s ,%s ,%s)"% (
+        account, password, age, sex)
     return DB.execution(DB.create, sqlstr)
