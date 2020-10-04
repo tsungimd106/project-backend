@@ -6,9 +6,7 @@ def login(account, password):
     sqlstr = "select * from member where id=\"%s\" and password = \"%s\"" % (
         account, password)
     return (DB.execution(DB.select, sqlstr))
-def sign():
-    sqlstr=""
-    return ""
+
 
 def findPasswordByAccount(account):
     sqlstr="select password from member where id=\"%s\""%account

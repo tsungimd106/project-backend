@@ -31,6 +31,7 @@ def sign():
     password = content["password"]
     age = content["age"]
     sex = content["sex"]
+    data=userModel.sign(account,password,age,sex)
     return("enter sign")
 
 
@@ -61,18 +62,5 @@ def edit():
 
 
 
-    data = userModel.login(account, password)
-    # if(data)!=None:
-    #     message="登入成功"
-
-    return Response(json.dumps(data, cls=MyEncoder), mimetype='application/json')
 
 
-@userProfile.route("/sign", methods=["POST"])
-def sign():
-    account = request.values.get("account")
-    password = request.values.get("password")
-    age = request.values.get("age")
-    sex = request.values.get("sex")
-    data = userModel.sign(account, password,age,sex)
-    return("enter sign")
