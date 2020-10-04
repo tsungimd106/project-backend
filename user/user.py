@@ -1,21 +1,23 @@
-from flask import Blueprint, request,Response
-from user import userModel
+from flask import Blueprint, request, Response
+import userModel
 import json
 from coder import MyEncoder
 
 
 userProfile = Blueprint("user", __name__, url_prefix="/user")
 
+
 @userProfile.route("/login", methods=["POST"])
 def login():
-    content=request.json
+    content = request.json
     account = content['account']
     password = content["password"]
-    data=userModel.login(account,password)
-    # if(data)!=None: 
+    data = userModel.login(account, password)
+    # if(data)!=None:
     #     message="登入成功"
-    
-    return Response(json.dumps(data,cls=MyEncoder), mimetype='application/json')
+
+    return Response(json.dumps(data, cls=MyEncoder), mimetype='application/json')
+
 
 @userProfile.route("/sign", methods=["POST"])
 def sign():
@@ -23,6 +25,5 @@ def sign():
     password = request.values.get("password")
     age = request.values.get("age")
     sex = request.values.get("sex")
+    data = userModel.sign(account, password,age,sex)
     return("enter sign")
-
-
