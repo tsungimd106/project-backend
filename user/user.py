@@ -1,5 +1,5 @@
 from flask import Blueprint, request, Response
-import userModel
+from user import userModel
 import json
 from coder import MyEncoder
 
@@ -27,12 +27,14 @@ def login():
 @userProfile.route("/sign", methods=["POST"])
 def sign():
     content=request.json
-    account = content['account']
+    account = content["account"]
     password = content["password"]
     age = content["age"]
     sex = content["sex"]
-    data=userModel.sign(account,password,age,sex)
-    return("enter sign")
+    name=content["name"]
+    data=userModel.sign(account,password,age,sex,name)
+    result={"success":True,"message":"註冊成功"}
+    return Response(json.dumps(result,cls=MyEncoder), mimetype='application/json')
 
 
 @userProfile.route("/password",methods=["PUT"])
