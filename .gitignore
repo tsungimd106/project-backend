@@ -1,7 +1,10 @@
 # created by virtualenv automatically
 Lib/*
-__pycache__/*
+/__pycache__/
+*.pyc
+*/__pycache__
 .git/*
 Scripts/*
-.vscode/*
-
+/.vscode/
+venv/
+venv/

@@ -6,6 +6,7 @@ from coder import MyEncoder
 import json
 import sys
 from line import lineModule
+from user.user import userProfile
 from linebot import (
     LineBotApi, WebhookHandler
 )
@@ -16,7 +17,8 @@ from linebot.models import (
     MessageEvent, TextMessage
 )
 
-app = Flask('__main__')
+app = Flask(__name__)
+app.register_blueprint(userProfile)
 line_bot_api = LineBotApi(
     "JFkmqeDZk4E5qf6W2awhVwtKPKCYXCG7BXu8PgaSv3GAS4PxqYGtC/96OTk3L0sG6zZnZtRtJRA2htHC2v6gAw01UE7KE2RYeGdvZF9epTkIH8DjmeeuA32vz3pcTnG7n5XzxU8jDyYzUeFlmI2SXgdB04t89/1O/w1cDnyilFU=")
 handler = WebhookHandler("02402a84858b56f54b5a34fc1928d4a4")
@@ -29,8 +31,9 @@ def line():
 
 @app.route('/', methods=["GET"])
 def home():
-    print("gigiigigigi")
     return 'good from backend'
+
+
 
 
 @app.route('/area')
@@ -47,7 +50,7 @@ def callback():
     signature = request.headers['X-Line-Signature']
     # get request body as text
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    # app.logger.info("Request body: " + body)
     print(body)
    # handle webhook body
     try:
@@ -62,3 +65,5 @@ def callback():
 def handle_message(event):
     data = lineModule.handle_messenge(event)
     line_bot_api.reply_message(event.reply_token, data)
+
+
