@@ -1,12 +1,12 @@
 # app.py
 import os
 from flask import Flask, Response, request, abort
-from politican import area
+from spider.politican import area
 from coder import MyEncoder
 import json
 import sys
-from line import lineModule
-from user.user import userProfile
+from model.line import lineModule
+from controller.user import userProfile
 from linebot import (
     LineBotApi, WebhookHandler
 )

@@ -1,4 +1,4 @@
-from db import DB
+from model.db import DB
 import json
 
 

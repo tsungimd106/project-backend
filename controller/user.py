@@ -1,5 +1,5 @@
 from flask import Blueprint, request, Response
-import userModel
+from model import userModel
 import json
 from coder import MyEncoder
 

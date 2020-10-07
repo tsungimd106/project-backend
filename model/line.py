@@ -1,5 +1,5 @@
 import json
-from politican import area
+from spider.politican import area
 from app import MyEncoder
 import json
 from linebot.models import (
