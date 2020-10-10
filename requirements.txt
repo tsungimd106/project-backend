@@ -23,7 +23,6 @@ mysql-connector==2.2.9
 pipenv==2020.6.2
 pycodestyle==2.6.0
 pylint==2.6.0
-request==1.0.117
 requests==2.24.0
 six==1.15.0
 soupsieve==2.0.1
