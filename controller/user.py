@@ -33,7 +33,7 @@ def sign():
     age = content["age"]
     sex = content["sex"]
     area = content["area"]
-    data = userModel.sign(account, password, age, sex,area)
+    data = userModel.sign(account, password, age, sex, area)
     return("enter sign")
 
 
@@ -66,3 +66,18 @@ def edit():
     else:
         result["message"] = "帳號不存在"
     return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
+
+
+@userProfile.route("/", methods=["PATCH"])
+def changeProfile():
+    content = request.json
+    account = content["account"]
+    cond=["age","sex","areaid"]
+    data={}
+    for i in cond:
+        if(i in content.keys()):
+            data[i]=content[i]
+    data=userModel.changeProfile(data,account) 
+    result = {"success": True, "message": "","data":data}
+    return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
+

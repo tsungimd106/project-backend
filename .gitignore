@@ -8,3 +8,5 @@ Scripts/*
 /.vscode/
 venv/
 venv/
+
+Web.config

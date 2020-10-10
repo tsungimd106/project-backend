@@ -40,7 +40,7 @@ class DB():
                 print("資料庫版本：", db_Info)
                 # 執行傳入的sql 指令
                 cursor = connection.cursor(dictionary=True)
-                if(type == DB.create):
+                if(type == DB.create or type==DB.update):
                     cursor.execute(sqlstr)
                     connection.commit()
                 else:
