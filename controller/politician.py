@@ -16,5 +16,5 @@ def find():
     for i in cond:
         if (i in content.keys()):
             data[i] = content[i]
-    data = politicianModel.find(data)
-    return(json.dumps(data, cls=MyEncoder))
+    data = politicianModel.find(data)    
+    return Response(json.dumps(data["data"], cls=MyEncoder), mimetype='application/json')
