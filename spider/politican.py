@@ -12,7 +12,7 @@ class polician:
 class area:
     @staticmethod
     def findArea():
-        sqlstr = ("select id from area")
+        sqlstr = ("select * from area")
         data = DB.execution(DB.select, sqlstr)
         return data
 

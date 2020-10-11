@@ -32,7 +32,7 @@ class DB():
                 host=DB.__host,
                 database=DB.__dbname,
                 user=DB.__user,
-                password=DB.__password,
+                password=DB.__password,                               
                 charset="utf8")
             if connection.is_connected():
                 # 顯示資料庫版本
@@ -45,8 +45,8 @@ class DB():
                     connection.commit()
                 else:
                     cursor.execute(sqlstr)
-                    rows = cursor.fetchall()
-                    return rows                
+                    rows = cursor.fetchall()                    
+                    return {"success":True,"data":rows}
                 cursor.close()
                 connection.close()
                 print("enter close")
@@ -55,5 +55,6 @@ class DB():
             print("資料庫連接失敗：", e)
             cursor.close()
             connection.close()
+            return {"success":False,"data":e}
 
-    
+
