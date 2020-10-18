@@ -31,6 +31,6 @@ def changeProfile():
     data = politicianModel.changePolitician(data, id)
     result = {"success": False, "message": "修改異常", "data": data}
     if(data["success"]):
-        result["success":True]
+        result["success"]=True
         result["message"]="修改成功"
     return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
