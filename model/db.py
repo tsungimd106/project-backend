@@ -43,6 +43,7 @@ class DB():
                 if(type == DB.create or type==DB.update):
                     cursor.execute(sqlstr)
                     connection.commit()
+                    return {"success":True}
                 else:
                     cursor.execute(sqlstr)
                     rows = cursor.fetchall()                    

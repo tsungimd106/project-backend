@@ -95,8 +95,9 @@ def changeProfile():
         if(i in content.keys()):
             data[i] = content[i]
     data = userModel.changeProfile(data, account)
+    print(data)
     result = {"success": False, "message": "修改異常", "data": data}
     if(data["success"]):
-        result["success":True]
+        result["success"]=True
         result["message"]="修改成功"
     return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')

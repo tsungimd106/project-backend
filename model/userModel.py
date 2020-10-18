@@ -29,9 +29,9 @@ def changeProfile(data, account):
     strCond = ""
     if(isinstance(data, dict)):
         for i in data.keys():
-            strCond += " %s = \"%s\" and" % (i, data[i])    
+            strCond += " %s = \"%s\" ," % (i, data[i])    
     sqlstr = "update user set %s where id=\"%s\"" % (
-        strCond[0:len(strCond)-3], account)
+        strCond[0:len(strCond)-1], account)
     print(sqlstr)
     return DB.execution(DB.update, sqlstr)
 
