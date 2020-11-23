@@ -26,7 +26,7 @@ app.register_blueprint(proposal.proposal)
 line_bot_api = LineBotApi(
     "JFkmqeDZk4E5qf6W2awhVwtKPKCYXCG7BXu8PgaSv3GAS4PxqYGtC/96OTk3L0sG6zZnZtRtJRA2htHC2v6gAw01UE7KE2RYeGdvZF9epTkIH8DjmeeuA32vz3pcTnG7n5XzxU8jDyYzUeFlmI2SXgdB04t89/1O/w1cDnyilFU=")
 handler = WebhookHandler("02402a84858b56f54b5a34fc1928d4a4")
-
+CORS(app)
 
 @app.route('/', methods=["POST"])
 def line():
