@@ -1,4 +1,4 @@
-from model.db import DB
+from ..model.db import DB
 
 
 class polician:

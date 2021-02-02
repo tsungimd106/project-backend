@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-from spider.politican import web
+from .spliderPolitican import web
 
 __LYGOV_URL = "https://data.ly.gov.tw/odw/openDatasetJson.action?id=9&selectTerm=all&page=1"
 __PO_URL = "https://data.ly.gov.tw/odw/openDatasetJson.action?id=20&selectTerm=all&page="
