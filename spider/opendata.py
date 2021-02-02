@@ -21,14 +21,11 @@ def lygov():
     if soup != "error":
         soup.encoding = 'utf-8'
         data = json.loads(str(soup))
-        count = 0
         for i in data["jsonList"]:
             web.createlygov(i)
             print("_"*7)
             # _____________________
-            count += 1
-            if(count > 25):
-                break
+
     else:
         print("立法院open data error")
     exit()
@@ -52,7 +49,6 @@ def po():
         else:
             print("立法院提案open data error")
         exit()
-po()
 
-# lygov()
+lygov()
 
