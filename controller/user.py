@@ -1,32 +1,43 @@
 from flask import Response
 from flask_restplus import Namespace, Resource, fields
-from model import userModel
+from model import userModel 
 import json
 from coder import MyEncoder
-api = Namespace('user', description='user controller')
+userApi = Namespace(name='user', description='使用者')
 
-userModel = api.model('user', {
-    'account': fields.String,
+loginModal=userApi.model("login",{
+     'account': fields.String,
     'password': fields.String,
+})
+
+userM = userApi.clone('user',loginModal, {
+  
     "birthday":fields.Date,
     "sex":fields.String,
     "areaid":fields.String,
     "name":fields.String
 }, )
-
-resultModel = api.model("result", {
-    "message": fields.String,
-    "success": fields.Boolean,
-    "data": fields.Nested
+signModel=userApi.clone("sign",userM,{
+    "confirePassword":fields.String
 })
 
+# resultModel = api.model("result", {
+#     "message": fields.String,
+#     "success": fields.Boolean,
+#     "data": fields.Nested
+# })
 
-@api.route("/login")
+@userApi.route("/test")
+class Test(Resource):
+    def get(self):
+        return "test"
+
+@userApi.route("/login")
 class User(Resource):
-    @api.doc("user login")
-    # @api.expect(userModel)
+    @userApi.doc("使用者登入")
+    @userApi.expect(loginModal)
     def post(self):
-        content = api.payload
+        content = userApi.payload
         account = content['account']
         password = content["password"]
         data = userModel.login(account, password)
@@ -41,7 +52,31 @@ class User(Resource):
         return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
 
        
-# @api.route("/sign")
-# class User(Resource):
-#     @api.doc("user sign")
-#     @api.expect()
+@userApi.route("/sign")
+class User(Resource):
+    @userApi.doc("user sign")
+    @userApi.expect(signModel)
+    def post(self):
+        content = userApi.payload
+        cond = ["account", "password", "age", "sex", "areaid","name"]
+        result = {"success": False, "message": ""}
+
+        if(checkParm(cond,content)):
+            data = userModel.sign(content["account"], content["password"],
+                              content["age"], content["sex"], content["areaid"],content["name"])
+        print(data)
+        if(data["success"]):
+            result["message"] = "註冊成功"
+            result["success"] = True
+        else:
+            result["message"]="註冊異常"
+        return Response(json.dumps(result, cls=MyEncoder))
+
+
+def checkParm(cond,content):
+    res=""
+    for i in cond:
+        if(i not in content.keys()):
+            res += "缺少必要參數 %s\n" % i
+    return res
+
