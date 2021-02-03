@@ -47,7 +47,8 @@ class DB():
                 else:
                     cursor.execute(sqlstr)
                     rows = cursor.fetchall()                    
-                    return {"success":True,"data":rows}
+                    # return {"success":True,"data":rows}
+                    return rows
                 cursor.close()
                 connection.close()
                 print("enter close")
