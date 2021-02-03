@@ -19,28 +19,33 @@ class area:
 class web:
     @staticmethod
     def createlygov(data):
-    # 搜尋選區
+
         areaName = data["areaName"]
         if(any(chr.isdigit() for chr in areaName)):
             num = ''.join([x for x in areaName if x.isdigit()])
             print(num)
-        sqlstr = "select * from area where name = \"%s\" " % areaName
-        # print(sqlstr)
-        # areaName = DB.execution(DB.select, sqlstr)
-        # print(areaName)
+        # 搜尋選區
+        sqlstr = "select id from area where name = \"%s\" " % areaName
+        print(sqlstr)
+        areaName = DB.execution(DB.select, sqlstr)[0][0]
+        print(areaName)
+        
         # 搜尋委員會
-        sqlstr = "select * from committee where name = \"%s\" " % data["committee"]
-        # print(sqlstr)
-        # committee = DB.execution(DB.select, sqlstr)
-        # print(committee)
+        sqlstr = "select id from committee where name = \"%s\" " % data["committee"]
+        print(sqlstr)
+        committee = DB.execution(DB.select, sqlstr)[0][0]
+        print(committee)
+        
         # 搜尋黨籍
-        sqlstr = "select * from party where name = \"%s\" " % data["party"]
+        sqlstr = "select id from party where name = \"%s\" " % data["party"]
         print(sqlstr)
         party = DB.execution(DB.select, sqlstr)[0][0]
-        sqlstr = ("insert into politician(term,name,sex,experience,tel,degree,address,partyid,photo) values('%s','%s','%s','%s','%s','%s','%s','%s','%s')"
+        print(party)
+        sqlstr = ("insert into politician(term,name,sex,experience,tel,degree,address,partyid,photo,area,committee) values('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"
                 % (data["term"], data["name"], data["sex"],
                     data["experience"], data["tel"], data["degree"],
-                    data["addr"], party, data["picUrl"]))
+                    data["addr"], party, data["picUrl"],
+                    areaName, committee))
         print(sqlstr)
         DB.execution(DB.create, sqlstr)
 
