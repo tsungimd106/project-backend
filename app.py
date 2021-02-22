@@ -1,11 +1,10 @@
 # app.py
 import os
 from flask import Flask, Response, request, abort
-from spider.politican import area
 from coder import MyEncoder
 import json
 import sys
-from model.line import lineModule
+# from model.line import lineModule
 # from controller import( user_old,politician,proposal)
 
 #  ----------------------- 
