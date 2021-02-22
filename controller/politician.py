@@ -14,7 +14,7 @@ politicianApi =Namespace(name='politician',description='政治人物')
 class Test(Resource):
     @politicianApi.doc("政治人物列表")
     def get(self):        
-        result=politicianModel.find(data={})
+        result=politicianModel.list(data={})
         return Response(json.dumps(result,cls=MyEncoder),mimetype="application/json")
 
 
