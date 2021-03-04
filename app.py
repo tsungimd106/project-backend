@@ -2,6 +2,7 @@
 import os
 from flask import Flask, Response, request, abort
 from coder import MyEncoder
+
 import json
 import sys
 # from model.line import lineModule
@@ -17,8 +18,7 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage
 )
-import werkzeug
-werkzeug.cached_property = werkzeug.utils.cached_property
+
 from flask_cors import CORS
 from flask_restplus import Resource, Api
 from controller.user import userApi
@@ -26,6 +26,7 @@ from controller.proposal import proposalApi
 from controller.politician import politicianApi
 
 app = Flask(__name__)
+
 # app.register_blueprint(user_old.userProfile)
 # app.register_blueprint(politician.politicianProfile)
 # app.register_blueprint(proposal.proposal)
@@ -34,12 +35,11 @@ line_bot_api = LineBotApi(
 handler = WebhookHandler("02402a84858b56f54b5a34fc1928d4a4")
 #  ----------------------- 
 
-CORS(app)
 api =Api(app)
 
 api.add_namespace(politicianApi)
 api.add_namespace(userApi)
-# api.add_namespace(proposalApi)
+api.add_namespace(proposalApi)
 
 
 
@@ -48,7 +48,7 @@ def line():
     return "ok"
 
 
-@app.route('/', methods=["GET"])
+@app.route('/get', methods=["GET","OPTIONS"])
 def home():
     return 'good from backend'
     
