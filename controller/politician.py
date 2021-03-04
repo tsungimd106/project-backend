@@ -13,7 +13,7 @@ politicianApi =Namespace(name='politician',description='政治人物')
 @politicianApi.route('/')
 class Test(Resource):
     @politicianApi.doc("政治人物列表")
-    def get(self):        
+    def get(self):            
         result=politicianModel.list(data={})
         return Response(json.dumps(result,cls=MyEncoder),mimetype="application/json")
 

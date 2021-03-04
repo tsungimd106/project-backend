@@ -31,6 +31,7 @@ def lygov():
     exit()
 
 
+
 def po():
     for i in range(1,22):
         soup = forClear(__PO_URL+i)
