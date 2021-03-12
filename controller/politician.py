@@ -17,13 +17,20 @@ class Test(Resource):
         result=politicianModel.list(data={})
         return Response(json.dumps(result,cls=MyEncoder),mimetype="application/json")
 
+@politicianApi.route('/list')
+class Test(Resource):
+    @politicianApi.doc("政治人物列表")
+    def get(self):            
+        result=politicianModel.getList(data={})
+        return Response(json.dumps(result,cls=MyEncoder),mimetype="application/json")
+
 
 @politicianApi.route("/<int:id>")
 @politicianApi.param("id","政治人物編號")
 class Politician(Resource):
     @politicianApi.doc("政治人物")
     def get(self,id):
-        result=politicianModel.find({"id":id})
+        result=politicianModel.getDetail({"id":id})
         return Response(json.dumps(result,cls=MyEncoder),mimetype="application/json")        
 
 # @politicianProfile.route("/find", methods=["GET"])
