@@ -43,3 +43,5 @@ def findUserarea(area):
     sqlstr = "select area from user where id = \"%s\"" % (
         area)
     return DB.execution(DB.select, sqlstr)
+
+#個人檔案
