@@ -2,37 +2,33 @@
 from model.db import DB
 import xiangshi as xs
 
-#category = ['財政金融', '教育', '內政', '司法及法制', '科技', '文化', '食品安全', '外交國防',
-            #'長期照顧', '衛生社福', '農業', '交通', '海洋', '性別平等', '動物保育', '社會福利及衛生環境', '環境', '勞工權益']
-
 #從資料庫裡抓取政見
-def findPolicy(politicianId):
-    sqlstr = "select id,content from policy where politician_id=\"%s\"" % politicianId
+def findPolicy():
+    sqlstr = "select id,content from policy"
     return DB.execution(DB.select, sqlstr)
-def findCategory(category_id):
-    sqlstr = "select id,name from category where id=\"%s\"" % id
+
+#從資料庫裡抓取類別
+def findCategory():
+    sqlstr = "select id,name from category"
     return DB.execution(DB.select, sqlstr)
 
 #待匯入完畢後跑迴圈
-data = findPolicy(399)
+data = findPolicy()
 category = findCategory()
 
 #分類與政見逐條比對
-for i in range(len(category)):
-    temp = [category[i]]
-    print('第', i+1, '個元素:', category[i])
-    for j in data:
-        dataList = []
-        d = data
-        dataList.append(j["content"])
-        s=j["content"].decode(encoding='utf-8', errors='ignore')
-        print(s) 
-        result = xs.cossim(temp, [s])
-
+for j in category:
+    m = [j["name"]] #類別
+    print('第1個元素:', j)
+    for i in data:
+        n=[i["content"].decode(encoding='utf-8', errors='ignore')] #政見
+        s=i["content"]
+        print(n) 
+        result = xs.cossim(m, n)
         print(result)
 
         num = int(result)
-        if num > 0:
+        if num > 0.4:
             returnCategory()
 
 # 將所屬類別存回資料庫
