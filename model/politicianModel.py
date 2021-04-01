@@ -47,31 +47,55 @@ def list(data):
         for i in data.keys():
             strCond += " %s =\"%s\" and" % (i, data[i])
     result = []
-    sqlstr = "SELECT * from politician order by position_id,term,area_id"
+    sqlstr = 'SELECT p.id,term,p.name,photo,po.name as "postition",a.other as "area" from politician as p join position as po on p.position_id=po.id join area as a on p.area_id=a.id order by position_id,term,area_id'
     rows = DB.execution(DB.select, sqlstr)
     # return rows["data"]
-    position = rows["data"][0]["position_id"]
-    area = rows["data"][0]["area_id"]
+    position = rows["data"][0]["postition"]
+    area = rows["data"][0]["area"]
     term = rows["data"][0]["term"]
     pList = []
-    aList = []
+    # aList = []
     tList = []
     dList=[]
     for i in rows["data"]:
-        if(area != i["area_id"]):                 
-            aList.append({"name": area, "d": dList})
-            dList=[]
-            area = i["area_id"]
+        # if(area != i["area_id"]):                 
+        #     aList.append({"name": area, "d": dList})
+        #     dList=[]
+        #     area = i["area_id"]
         if(term != i["term"]):            
-            tList.append({"name":term,"d":aList})
+            tList.append({"name": term, "d": dList})
             aList=[]        
             term = i["term"]
-        if(position != i["position_id"]):
+        if(position != i["postition"]):
             pList.append({"name":position,"d":tList})
-            position = i["position_id"]
+            position = i["postition"]
         dList.append(i)
     
     return pList
+
+def getList(data):
+    strCond = ""
+    if (isinstance(data, dict)):
+        for i in data.keys():
+            strCond += " %s =\"%s\" and" % (i, data[i])
+    result = []
+    sqlstr = "SELECT * from politician order by position_id,term,area_id"
+    rows = DB.execution(DB.select, sqlstr)
+    
+    
+    return rows
+
+def getDetail(data):
+    strCond = ""
+    if (isinstance(data, dict)):
+        for i in data.keys():
+            strCond += " %s =\"%s\" and" % (i, data[i])
+    result = []
+    sqlstr = ("SELECT * from politician where id ='%s'" %(data["id"]))
+    rows = DB.execution(DB.select, sqlstr)
+    
+    
+    return rows
 
 
 def getPropsoal(politicianId):

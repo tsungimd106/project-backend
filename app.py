@@ -40,7 +40,7 @@ api =Api(app)
 api.add_namespace(politicianApi)
 api.add_namespace(userApi)
 api.add_namespace(proposalApi)
-
+CORS(app)
 
 
 @app.route('/', methods=["POST"])
