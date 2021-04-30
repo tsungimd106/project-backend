@@ -21,9 +21,7 @@ from linebot.models import (
 
 from flask_cors import CORS
 from flask_restplus import Resource, Api
-from controller.user_ful import userApi
-from controller.proposal_ful import proposalApi
-from controller.politician_ful import politicianApi
+
 
 app = Flask(__name__)
 
