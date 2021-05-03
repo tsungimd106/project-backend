@@ -40,15 +40,22 @@ class DB():
                 print("資料庫版本：", db_Info)
                 # 執行傳入的sql 指令
                 cursor = connection.cursor(dictionary=True)
-                if(type == DB.create or type == DB.update):
-                    cursor.execute(sqlstr)
-                    connection.commit()
-                    return {"success": True}
+                if(isinstance(sqlstr, list)):
+                    result = []
+                    for sqlstrItem in sqlstr:
+                        cursor.execute(sqlstrItem["sql"])
+                        result.append({name:sqlstrItem["name"],data:connection.fetchall()})
+                    return {success: True, data: result}
                 else:
-                    cursor.execute(sqlstr)
-                    rows = cursor.fetchall()
-                    return {"success":True,"data":rows}
-                    
+                    if(type == DB.create or type == DB.update):
+                        cursor.execute(sqlstr)
+                        connection.commit()
+                        return {"success": True}
+                    else:
+                        cursor.execute(sqlstr)
+                        rows = cursor.fetchall()
+                        return {"success": True, "data": rows}
+
                 cursor.close()
                 connection.close()
                 print("enter close")

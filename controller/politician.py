@@ -40,18 +40,22 @@ def term():
     return ret(politicianModel.getTerm())
 
 
-@politicianAPI.route("/", methods=["PATCH"])
-def changeProfile():
+
+
+
+@politicianAPI.route("/score", methods=["GET"])
+def getScore():
+    return ret(politicianModel.schedule)
+
+
+@politicianAPI.route("/score", methods=["POST"])
+def score():
     content = request.json
-    account = content["id"]
-    cond = ["term", "sex", "partyid", "areaid", "positionid"]
-    data = {}
-    for i in cond:
-        if(i in content.keys()):
-            data[i] = content[i]
-    data = politicianModel.changePolitician(data, id)
-    result = {"success": False, "message": "修改異常", "data": data}
-    if(data["success"]):
-        result["success"] = True
-        result["message"] = "修改成功"
-    return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
+    cond = ["user_id", "policy_id", "ps_id"]
+    result = checkParm(cond, content)
+    if(result == "")    {
+        return ret({success: false, message: result})
+    }
+    else{
+        return ret(politicianModel.score(content.user_id, content.policy_id, content.ps_id))
+    }
