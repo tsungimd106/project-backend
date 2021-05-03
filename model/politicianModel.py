@@ -50,7 +50,7 @@ def getList(data):
     sqlstr = "SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel %s %s order by e.area_id,p.term,f.name" % (
         "FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id",
         "where %s " % strCond if len(strCond) > 0 else ""
-        )
+    )
     print(sqlstr)
     rows = DB.execution(DB.select, sqlstr)
 
@@ -64,7 +64,7 @@ def getDetail(data):
             strCond += " %s =\"%s\" and" % (i, data[i])
     result = []
     sqlstr = (
-        "SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel,pa.name as p_name %s  where p.id=\"%s\" order by e.area_id,p.term,f.name"  % (
+        "SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel,pa.name as p_name %s  where p.id=\"%s\" order by e.area_id,p.term,f.name" % (
             "FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id join party as pa on p.party_id=pa.id",
             data["id"])
     )
@@ -74,8 +74,8 @@ def getDetail(data):
     return rows
 
 
-def getPropsoal(politicianId):
-    sqlstr = "select * from proposer where "
+# def getPropsoal(politicianId):
+#     sqlstr = "select * from proposer where "
 
 
 def changePolitician(data, id):
@@ -105,3 +105,14 @@ def getTerm():
     sqlstr = "SELECT term FROM db.politician group by term;"
     strCond = ""
     return DB.execution(DB.select, sqlstr)
+
+
+def schedule():
+    sqlstr = "select * from db.schedule"
+    return DB.execution(DB.select, sqlstr)
+
+
+def score(user_id, policy_id, ps_id):
+    sqlstr = ("insert into user_policy(user_id,policy_id,ps_id) values(%s,%s,%s)" %
+              user_id, policy_id, ps_id)
+    return DB.execution(DB.create, sqlstr)

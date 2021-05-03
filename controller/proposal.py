@@ -47,19 +47,27 @@ def vote():
     return ret(data)
 
 
-@proposalAPI.route("/", methods=["PATCH"])
-def changeProfile():
+@proposalAPI.route("/save", methods=["GET"])
+def getSave():
     content = request.json
-    id = content["id"]
-    cond = ["term", "sessionPeriod", "billNo", "billName",
-            "billOrg", "ststusid", "billProposer", "billCosignator"]
-    data = {}
-    for i in cond:
-        if(i in content.keys()):
-            data[i] = content[i]
-    data = proposalModal.change(data, id)
-    result = {"success": False, "message": "修改異常", "data": data}
-    if(data["success"]):
-        result["success"] = True
-        result["message"] = "修改成功"
+    cond = ["user_id"]
+    result=checkParm(cond,content)
+    if(result==""){
         return ret(result)
+    }
+    else{
+        return ret(proposalModal.getSave(content.user_id))
+    }
+
+
+@proposalAPI.route("/save", methods=["POST"])
+def save():
+    content = request.json
+    cond = ["user_id", "proposal_id"]
+    result = checkParm(cond, content)
+    if(result == ""){
+        return ret(result)
+    }
+    else return ret(proposalModal.save(content.user_id, content.proposal_id))
+
+
