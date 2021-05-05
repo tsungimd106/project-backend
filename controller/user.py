@@ -4,10 +4,10 @@ import json
 from coder import MyEncoder
 from flask import app
 
-userProfile = Blueprint("user_old", __name__, url_prefix="/user")
+userProfile = Blueprint("user", __name__, url_prefix="/user")
 
 
-@userProfile.route("/login/old", methods=["POST"])
+@userProfile.route("/login", methods=["POST"])
 def login():
     content = request.json
     account = content['account']
