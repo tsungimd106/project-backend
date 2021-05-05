@@ -17,11 +17,17 @@ def identity():
     sqlstr = "select * from identity"
     return DB.execution((DB.select), sqlstr)
 
-def reportCheck(check,report_id,manager_id,user_id,time):
-    sqlstr=["update report set check=%s where report_id=%s"%(check,report_id)]
+
+def reportCheck(check, report_id, manager_id, time):
+    sqlstr = ["update report set check=%s where report_id=%s" %
+              (check, report_id)]
     if(check):
-        sqlstr.append("insert into freezen (manager_id,report_id,time) values(%s,%s,%s)"%( manager_id,report_id,time))
+        sqlstr.append("insert into freezen (manager_id,report_id,time) values(%s,%s,%s)" % (
+            manager_id, report_id, time))
     return DB.execution(DB.select, sqlstr)
 
 
-    
+def report():
+    sqlstr = "select * from report"
+    return DB.execution(DB.select, sqlstr)
+

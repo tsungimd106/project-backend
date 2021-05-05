@@ -44,8 +44,10 @@ class DB():
                     result = []
                     for sqlstrItem in sqlstr:
                         cursor.execute(sqlstrItem["sql"])
-                        result.append({name:sqlstrItem["name"],data:connection.fetchall()})
-                    return {success: True, data: result}
+                        rows = cursor.fetchall()
+                        result.append(
+                            {"name": sqlstrItem["name"], "data": rows})
+                    return {"success": True, "data": result}
                 else:
                     if(type == DB.create or type == DB.update):
                         cursor.execute(sqlstr)

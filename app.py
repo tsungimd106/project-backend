@@ -25,7 +25,7 @@ from flask_restplus import Resource, Api
 
 app = Flask(__name__)
 
-# app.register_blueprint(user.userProfile)
+app.register_blueprint(user.userProfile)
 app.register_blueprint(politician.politicianAPI)
 app.register_blueprint(proposal.proposalAPI)
 line_bot_api = LineBotApi(

@@ -107,6 +107,13 @@ def getTerm():
     return DB.execution(DB.select, sqlstr)
 
 
+def getCond():
+    sqlstr = [{"sql": "SELECT name FROM db.area order by id;", "name": "地區"},
+              {"sql": "SELECT name FROM db.figure group by name;", "name": "姓名"},
+              {"sql": "SELECT term as name FROM db.politician group by term;", "name": "屆別"}]
+    return DB.execution(DB.select, sqlstr)
+
+
 def schedule():
     sqlstr = "select * from db.schedule"
     return DB.execution(DB.select, sqlstr)
