@@ -1,62 +1,65 @@
 from flask import Blueprint, request, Response
-from flask_restplus import Namespace, Resource, fields
-
 from model import politicianModel
 import json
 from coder import MyEncoder
-politicianApi =Namespace(name='politician',description='政治人物')
-
-# politicianM=politicianApi.model("politician",{
-    
-# })
-
-@politicianApi.route('/')
-class Test(Resource):
-    @politicianApi.doc("政治人物列表")
-    def get(self):            
-        result=politicianModel.list(data={})
-        return Response(json.dumps(result,cls=MyEncoder),mimetype="application/json")
-
-@politicianApi.route('/list')
-class Test(Resource):
-    @politicianApi.doc("政治人物列表")
-    def get(self):            
-        result=politicianModel.getList(data={})
-        return Response(json.dumps(result,cls=MyEncoder),mimetype="application/json")
+from .util import ret, checkParm, normalize_query
 
 
-@politicianApi.route("/<int:id>")
-@politicianApi.param("id","政治人物編號")
-class Politician(Resource):
-    @politicianApi.doc("政治人物")
-    def get(self,id):
-        result=politicianModel.getDetail({"id":id})
-        return Response(json.dumps(result,cls=MyEncoder),mimetype="application/json")        
+politicianAPI = Blueprint("politician", __name__, url_prefix="/politician")
 
-# @politicianProfile.route("/find", methods=["GET"])
-# def find():
-#     content = request.json
-#     # name=content['name']
-#     cond = ["id", "term", "sex", "partyid", "areaid", "positionid"]
-#     data = {}
-#     for i in cond:
-#         if (i in content.keys()):
-#             data[i] = content[i]
-#     data = politicianModel.find(data)    
-#     return Response(json.dumps(data["data"], cls=MyEncoder), mimetype='application/json')
 
-# @politicianProfile.route("/", methods=["PATCH"])
-# def changeProfile():
-#     content = request.json
-#     account = content["id"]
-#     cond = [ "term", "sex", "partyid", "areaid", "positionid"]
-#     data = {}
-#     for i in cond:
-#         if(i in content.keys()):
-#             data[i] = content[i]
-#     data = politicianModel.changePolitician(data, id)
-#     result = {"success": False, "message": "修改異常", "data": data}
-#     if(data["success"]):
-#         result["success"]=True
-#         result["message"]="修改成功"
-#     return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
+@politicianAPI.route("/list", methods=["GET"])
+def list():
+    print(request.args.get("name"))
+    # content = request.json
+    # print(content)
+    # cond = ["id", "term", "sex", "partyid", "areaid", "positionid"]
+    # data = {}
+    # for i in cond:
+    #     if (i in content.keys()):
+    #         data[i] = content[i]
+    # print(data)
+    query_params = normalize_query(request.args)
+    print(query_params)
+    return ret(politicianModel.getList({}))
+
+
+@politicianAPI.route("/<p_id>", methods=["GET"])
+def detail(p_id):
+    return ret(politicianModel.getDetail({"id": p_id}))
+
+
+@politicianAPI.route("/area", methods=["GET"])
+def area():
+    return ret(politicianModel.getArea())
+
+
+@politicianAPI.route("/name", methods=["GET"])
+def name():
+    return ret(politicianModel.getName())
+
+
+@politicianAPI.route("/term", methods=["GET"])
+def term():
+    return ret(politicianModel.getTerm())
+
+
+@politicianAPI.route("/cond", methods=["GET"])
+def cond():
+    return ret(politicianModel.getCond())
+
+
+@politicianAPI.route("/score", methods=["GET"])
+def getScore():
+    return ret(politicianModel.schedule())
+
+
+@politicianAPI.route("/score", methods=["POST"])
+def score():
+    content = request.json
+    cond = ["user_id", "policy_id", "ps_id"]
+    result = checkParm(cond, content)
+    if(result == ""):
+        return ret(politicianModel.score(content.user_id, content.policy_id, content.ps_id))
+    else:
+        return ret({"success": False, "message": result})
