@@ -1,5 +1,5 @@
 import json
-from spider.politican import area
+from model import politicianModel
 from app import MyEncoder
 import json
 from linebot.models import (
@@ -13,6 +13,6 @@ class lineModule:
         msg = event.message.text
         if(msg == "我要area"):
             return TextSendMessage(
-                text=str(json.dumps(area.findArea(), cls=MyEncoder)))
+                text=str(json.dumps(politicianModel.find(), cls=MyEncoder)))
         else:
             return TextSendMessage(text=msg)
