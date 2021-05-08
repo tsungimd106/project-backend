@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-from .spliderProposal import web
+from spliderProposal import web
 
 __LYGOV_URL = "https://data.ly.gov.tw/odw/openDatasetJson.action?id=9&selectTerm=all&page=1"
 __PO_URL = "https://data.ly.gov.tw/odw/openDatasetJson.action?id=20&selectTerm=all&page="
@@ -35,19 +35,20 @@ def lygov():
 
 def po():
     for i in range(1,22):
-        soup = forClear(__PO_URL+i)
+        soup = forClear(__PO_URL+str(i))
         if soup != "error":
             soup.encoding = 'utf-8'
             data = json.loads(str(soup))
             # print(str(soup))
             count = 0
-            for i in data["jsonList"]:
-                web.createpo(i)
-                print("_"*7)
-                # _____________________
-                count += 1
-                #if(count > 100):
-                    #break
+            web.createpo(data["jsonList"])
+            # for i in data["jsonList"]:
+                
+            #     print("_"*7)
+            #     # _____________________
+            #     count += 1
+            #     #if(count > 100):
+            #         #break
         else:
             print("立法院提案open data error")
         exit()
