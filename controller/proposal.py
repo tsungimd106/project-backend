@@ -84,3 +84,8 @@ def report():
 @proposalAPI.route("/rule", methods=["GET"])
 def rule():
     return ret(proposalModel.rule())
+
+
+@proposalAPI.route("/cond", methods=["GET"])
+def cond():
+    return ret(proposalModel.getCond())
