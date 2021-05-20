@@ -64,11 +64,23 @@ def findUserarea():
     return Response(json.dumps(data, cls=MyEncoder), mimetype="application/json")
 
 
+@userProfile.route("/<u_id>",methods=["GET"])
+def getUser(u_id):  
+    return ret(userModel.user(u_id))
+    
+
+@userProfile.route("/",methods=["POST"])
+def user():
+    content=request.json
+    return ret(userModel.user(content["user_id"]))
+
+
 @userProfile.route("/", methods=["PUT"])
 def edit():
     content = request.json
     cond = ["account", "oldPassword", "password", "passwordConfire"]
     result = {"success": False, "message": ""}
+    
     for i in cond:
         if(i not in content.keys()):
             result["message"] += "缺少必要參數 %s\n" % i

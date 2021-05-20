@@ -51,3 +51,17 @@ def findUserarea(area):
 def hasUser(userid):
     sqlstr = "select count(*) from user where id=\"%s\"" % (userid)
     return DB.execution(DB.select, sqlstr)
+
+
+def user(user_id):
+    sqlstr = [{"sql": "SELECT id,name,nick_name,degree,area_id,gender,birthday FROM db.user where id=\"%s\"" %
+               user_id, "name": "user"},
+              {"sql": "select * from area", "name": "area"},
+              {
+                  "sql": ("select * from favorite as f join proposal as p on f.proposal_id=p.id join status as s on p.status_id=s.id where user_id=\"%s\"" % user_id),
+                  "name": "save"}
+              , {
+                  "sql": "select m.*,p.title from message as m join proposal as p on m.proposal_id = p.id where user_id=\"%s\"" % (
+                      user_id), "name": "msg"
+    }]
+    return DB.execution(DB.select, sqlstr)

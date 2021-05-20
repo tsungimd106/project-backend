@@ -69,7 +69,7 @@ def getDetail(data):
             data["id"]),"name":"detail"
     },
     {
-        "sql":"select p.id,p.content,c.name ,c.id from policy as p join policy_category as pc on pc.policy_id=p.id join category as c on pc.category_id=c.id where politician_id=%s" % data["id"]
+        "sql":"select p.id,p.content,c.name ,c.id as c_id from policy as p join policy_category as pc on pc.policy_id=p.id join category as c on pc.category_id=c.id where politician_id=%s order by p.id" % data["id"]
     ,"name":"policy"}]
         
     

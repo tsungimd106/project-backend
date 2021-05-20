@@ -26,7 +26,24 @@ def list():
 
 @politicianAPI.route("/<p_id>", methods=["GET"])
 def detail(p_id):
-    return ret(politicianModel.getDetail({"id": p_id}))
+    temp=politicianModel.getDetail({"id":p_id})
+    print(temp)
+    policy=[]
+    policyContent=""
+    policyCateogry=[]
+    now=0
+    for i in temp["data"][1]["data"]:
+        if now!=i["id"]:
+            now=i["id"]
+            policy.append({"content":policyContent,"cateogry":policyCateogry})
+            policyContent=i["content"]
+            policyCateogry=[]
+            policyCateogry.append(i["name"])
+        else:
+            policyCateogry.append(i["name"])
+        
+    temp["data"][1]["data"]=policy   
+    return ret(temp)
 
 
 @politicianAPI.route("/area", methods=["GET"])
