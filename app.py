@@ -6,7 +6,7 @@ from coder import MyEncoder
 import json
 import sys
 # from model.line import lineModule
-from controller import( user,politician,proposal)
+from controller import( user,politician,proposal,manage)
 
 #  ----------------------- 
 from linebot import (
@@ -28,6 +28,7 @@ app = Flask(__name__)
 app.register_blueprint(user.userProfile)
 app.register_blueprint(politician.politicianAPI)
 app.register_blueprint(proposal.proposalAPI)
+app.register_blueprint(manage.manageAPI)
 line_bot_api = LineBotApi(
     "JFkmqeDZk4E5qf6W2awhVwtKPKCYXCG7BXu8PgaSv3GAS4PxqYGtC/96OTk3L0sG6zZnZtRtJRA2htHC2v6gAw01UE7KE2RYeGdvZF9epTkIH8DjmeeuA32vz3pcTnG7n5XzxU8jDyYzUeFlmI2SXgdB04t89/1O/w1cDnyilFU=")
 handler = WebhookHandler("02402a84858b56f54b5a34fc1928d4a4")
