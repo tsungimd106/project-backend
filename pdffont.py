@@ -22,19 +22,21 @@ def getColName(table):
         # print(table[0])
         return table[0]
 content = findPdfurl()
+pdfdb = findPdfurl()  
 print(len(content["data"]))
 
-pdfdb = findPdfurl()
+
 #讀取成文字後存回資料庫
 def returnPdfcontent(content):
     sqlstr = "insert into proposal (content) VALUES (%s)" % (
         content)
     return DB.execution(DB.create, sqlstr)
 
-def returnHashtag(hashtag):
-    sqlstr = "insert into hashtag(hashtag_name) VALUES (%s)" %(
-        hashtag)
-    return DB.execution(DB.create,sqlstr)
+def returnHashtag(hashtags):
+    for tag in hashtags:
+        print("insert into hashtag (hashtag_name) VALUES ('%s')" % (
+        tag[0]))
+    
 
 for j in pdfdb["data"]:
     rq = requests.get(j["pdfUrl"])
@@ -61,7 +63,7 @@ for j in pdfdb["data"]:
         end=allText.index(table)
         # print(end) 
         text=allText[ind:end]
-        print(text)
+        #print(text)
         
     except:
         print("eror")
@@ -70,37 +72,23 @@ for j in pdfdb["data"]:
         end=allText.index("提案人")
         print(end)
         text=allText[ind:end]
-        print(text)
+        #print(text)
     print()
     #str1 = text
     #str2 = "草案總說明"
     #print (str1.index(str2)) 
-    #開始斷詞
+    #自訂詞語庫
     jieba.load_userdict('C:\\Users\\110501\\Desktop\\backend\\project-backend-from Chihyu\\dict.txt')
+    #停用詞定義
     jieba.analyse.set_stop_words("C:\\Users\\110501\\Desktop\\backend\\project-backend-from Chihyu\\stopwords.txt")
+    #開始斷詞
     tags = jieba.analyse.extract_tags(text, topK=3, withWeight=True,allowPOS=())
     print(tags)
     #取前三個詞
-    #詞性篩選:名詞、形容詞、名形詞、人名、地名、機構團體、其他專有名詞
-    stopwords = ["stopwords.txt"]
-    break_words=[]
-    #去除停用詞
-    for j in text:
-        break_words.append(j)
-    for word in open ('stopwords.txt','r',encoding="utf-8",errors='ignore'):
-        stopwords.append(word.strip())
-    del_stopwords=[]
-    for k in break_words:
-        if k not in stopwords:
-            del_stopwords.append(k)
-    
-    for sentence in text:
-        seg_list = jieba.lcut(sentence)
-    #seg_list = jieba.lcut(sentence)    
-    #print(seg_list)
+
     for tag in tags:
         print('word:', tag[0], 'tf-idf:', tag[1])
-
+    returnHashtag(tags)
     
 
     #returnPdfcontent(text)
