@@ -31,6 +31,11 @@ def returnPdfcontent(content):
         content)
     return DB.execution(DB.create, sqlstr)
 
+def returnHashtag(hashtag):
+    sqlstr = "insert into hashtag(hashtag_name) VALUES (%s)" %(
+        hashtag)
+    return DB.execution(DB.create,sqlstr)
+
 for j in pdfdb["data"]:
     rq = requests.get(j["pdfUrl"])
     pdf = pdfplumber.load(BytesIO(rq.content))
@@ -71,10 +76,13 @@ for j in pdfdb["data"]:
     #str2 = "草案總說明"
     #print (str1.index(str2)) 
     #開始斷詞
-    tags = jieba.analyse.extract_tags(text, topK=3, withWeight=True,allowPOS=('n','a','an','nr','ns','nt','nz'))
+    jieba.load_userdict('C:\\Users\\110501\\Desktop\\backend\\project-backend-from Chihyu\\dict.txt')
+    jieba.analyse.set_stop_words("C:\\Users\\110501\\Desktop\\backend\\project-backend-from Chihyu\\stopwords.txt")
+    tags = jieba.analyse.extract_tags(text, topK=3, withWeight=True,allowPOS=())
+    print(tags)
     #取前三個詞
     #詞性篩選:名詞、形容詞、名形詞、人名、地名、機構團體、其他專有名詞
-    stopwords = ['stopwords.txt']
+    stopwords = ["stopwords.txt"]
     break_words=[]
     #去除停用詞
     for j in text:
@@ -94,7 +102,6 @@ for j in pdfdb["data"]:
         print('word:', tag[0], 'tf-idf:', tag[1])
 
     
-
 
     #returnPdfcontent(text)
 
