@@ -44,14 +44,14 @@ def getList(data):
                 c += " '%s' ," % j
             strCond += " %s )" % c[0:len(c)-1]
 
-    print(data)
+    # print(data)
     result = []
-    print(strCond)
+    # print(strCond)
     sqlstr = "SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel %s %s order by e.area_id,p.term,f.name" % (
         "FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id",
         "where %s " % strCond if len(strCond) > 0 else ""
     )
-    print(sqlstr)
+    # print(sqlstr)
     rows = DB.execution(DB.select, sqlstr)
 
     return rows
@@ -63,14 +63,20 @@ def getDetail(data):
         for i in data.keys():
             strCond += " %s =\"%s\" and" % (i, data[i])
     result = []
-    sqlstr = (
-        "SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel,pa.name as p_name %s  where p.id=\"%s\" order by e.area_id,p.term,f.name" % (
+    sqlstr = [{
+        "sql": "SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel,pa.name as p_name,e.name as e_n,e.remark %s  where p.id=\"%s\" order by e.area_id,p.term,f.name" % (
             "FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id join party as pa on p.party_id=pa.id",
-            data["id"])
-    )
+            data["id"]), "name":"detail"
+    },
+        {
+        "sql": "select p.id,p.content,c.name ,c.id as c_id from policy as p join policy_category as pc on pc.policy_id=p.id join category as c on pc.category_id=c.id where politician_id=%s order by p.id" % data["id"], "name":"policy"}]
+
     print(sqlstr)
     rows = DB.execution(DB.select, sqlstr)
-
+    temp = []
+    # for i in rows.data[1]["data"]:
+    #     print(i)
+    # print(rows)
     return rows
 
 
@@ -119,7 +125,7 @@ def schedule():
     return DB.execution(DB.select, sqlstr)
 
 
-def score(user_id, policy_id, ps_id):
-    sqlstr = ("insert into user_policy(user_id,policy_id,ps_id) values(%s,%s,%s)" %
-              user_id, policy_id, ps_id)
+def score(user_id, policy_id, ps_id, remark):
+    sqlstr = ("insert into user_policy(user_id,policy_id,ps_id,remark) values(\"%s\",\"%s\",\"%s\",\"%s\")" %
+             ( user_id, policy_id, ps_id, remark))
     return DB.execution(DB.create, sqlstr)

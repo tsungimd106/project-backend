@@ -26,7 +26,24 @@ def list():
 
 @politicianAPI.route("/<p_id>", methods=["GET"])
 def detail(p_id):
-    return ret(politicianModel.getDetail({"id": p_id}))
+    temp=politicianModel.getDetail({"id":p_id})
+    print(temp)
+    policy=[]
+    policyContent=""
+    policyCateogry=[]
+    now=0
+    for i in temp["data"][1]["data"]:
+        if now!=i["id"]:
+            policy.append({"content":policyContent,"cateogry":policyCateogry,"id":now})
+            now=i["id"]            
+            policyContent=i["content"]
+            policyCateogry=[]
+            policyCateogry.append(i["name"])
+        else:
+            policyCateogry.append(i["name"])
+        
+    temp["data"][1]["data"]=policy   
+    return ret(temp)
 
 
 @politicianAPI.route("/area", methods=["GET"])
@@ -57,9 +74,10 @@ def getScore():
 @politicianAPI.route("/score", methods=["POST"])
 def score():
     content = request.json
-    cond = ["user_id", "policy_id", "ps_id"]
+    cond = ["user_id", "policy_id", "ps_id","remark"]
     result = checkParm(cond, content)
     if(result == ""):
-        return ret(politicianModel.score(content.user_id, content.policy_id, content.ps_id))
+        politicianModel.score(content["user_id"], content["policy_id"], content["ps_id"],content["remark"])
+        return ret({"success":True,"message":"評分成功"})
     else:
         return ret({"success": False, "message": result})

@@ -1,10 +1,11 @@
 from flask import Blueprint, request, Response
-from model import (userModel, manageModel, politicianModel, proposalModel,articleModel)
+from model import (userModel, manageModel, politicianModel,
+                   proposalModel, articleModel)
 import json
 from coder import MyEncoder
 from flask import app
 from .util import (ret, checkParm)
-
+from werkzeug.utils import secure_filename
 
 manageAPI = Blueprint("manage", __name__, url_prefix="/manage")
 
@@ -27,7 +28,7 @@ def changeProfile():
 
 
 @manageAPI.route("/proposal", methods=["PATCH"])
-def changeProfile():
+def changeProposal():
     content = request.json
     id = content["id"]
     cond = ["term", "sessionPeriod", "billNo", "billName",
@@ -59,15 +60,10 @@ def setIdentity():
         return ret(t)
 
 
-@manageAPI.route("/identity/user", methods=["GET"])
+@manageAPI.route("/user", methods=["GET"])
 def identityUser():
-    content = request.json
-    t = checkParm(["identity"], content)
-    if(t == ""):
-        return ret(manageModel.manager())
-    else:
-        return ret(t)
-
+    return ret(manageModel.getUser())
+    
 
 @manageAPI.route("/report", methods=["GET"])
 def getReport():
@@ -88,7 +84,10 @@ def report():
 # @manageAPI.route("article",methods=["POST"])
 # def article():
 #     content=request.json
-#     cond=["article_id","content"]
+#     cond=["article_id","content","version"]
 #     t=checkParm(cond,content)
-#     if(t=""):
-#         return ret(articleModel.change())
+#     if t!="":
+#         f=request.files[" "]
+#         filename = secure_filename(file.filename)
+#         f.save(os.path.join("tmp",filename))
+#     else:
