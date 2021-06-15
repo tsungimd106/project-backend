@@ -34,8 +34,8 @@ def detail(p_id):
     now=0
     for i in temp["data"][1]["data"]:
         if now!=i["id"]:
-            now=i["id"]
-            policy.append({"content":policyContent,"cateogry":policyCateogry})
+            policy.append({"content":policyContent,"cateogry":policyCateogry,"id":now})
+            now=i["id"]            
             policyContent=i["content"]
             policyCateogry=[]
             policyCateogry.append(i["name"])
@@ -74,9 +74,10 @@ def getScore():
 @politicianAPI.route("/score", methods=["POST"])
 def score():
     content = request.json
-    cond = ["user_id", "policy_id", "ps_id"]
+    cond = ["user_id", "policy_id", "ps_id","remark"]
     result = checkParm(cond, content)
     if(result == ""):
-        return ret(politicianModel.score(content.user_id, content.policy_id, content.ps_id))
+        politicianModel.score(content["user_id"], content["policy_id"], content["ps_id"],content["remark"])
+        return ret({"success":True,"message":"評分成功"})
     else:
         return ret({"success": False, "message": result})

@@ -7,9 +7,9 @@ def list(data):
     if (isinstance(data, dict)):
         for i in data.keys():
             strCond += " %s =\"%s\" and" % (i, data[i])
-    sqlstr = "select p.*,s.status from proposal as p join `status`  as s on p.status_id=s.id %s limit 50" % (
+    sqlstr = "select p.*,s.status from proposal as p join `status`  as s on p.status_id=s.id %s limit 500" % (
         "where " + strCond[0:len(strCond)-3] if len(strCond) > 0 else "")
-    print(sqlstr)
+    
     return (DB.execution(DB.select, sqlstr))
 
 
@@ -56,7 +56,7 @@ def getSave(user_id):
 def save(user_id, proposal_id):
     sqlstr = ("insert into favorite( user_id,proposal_id) values(\"%s\",\"%s\");" %
               (user_id, proposal_id))
-    print(sqlstr)
+    
     return DB.execution(DB.create, sqlstr)
 
 
@@ -82,7 +82,7 @@ def change(data, id):
             strCond += " %s = \"%s\" ," % (i, data[i])
     sqlstr = "update proposal set %s where id=\"%s\"" % (
         strCond[0:len(strCond)-1], id)
-    print(sqlstr)
+    
     return DB.execution(DB.update, sqlstr)
 
 

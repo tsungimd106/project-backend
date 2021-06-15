@@ -54,7 +54,7 @@ def hasUser(userid):
 
 
 def user(user_id):
-    sqlstr = [{"sql": "SELECT id,name,nick_name,degree,area_id,gender,birthday FROM db.user where id=\"%s\"" %
+    sqlstr = [{"sql": "SELECT u.id,u.name,nick_name,degree,a.name as a_n ,gender,birthday FROM db.user as u join area as a on u.area_id=a.id where u.id=\"%s\"" %
                user_id, "name": "user"},
               {"sql": "select * from area", "name": "area"},
               {

@@ -24,7 +24,7 @@ def msg():
             account=content[cond[0]], mes=content[cond[1]], article_id=content[cond[2]], parent_id=content[cond[3]])
     else:
         data = {"success": False, "mes": t}
-    print(data)
+    
     return ret(data)
 
 
@@ -44,14 +44,14 @@ def vote():
             userid=content[cond[0]], sp_id=content[cond[1]], proposal_id=content[cond[2]])
     else:
         data = {"success": False, "mes": t}
-    print(data)
+    
     return ret(data)
 
 
 @proposalAPI.route("/save", methods=["GET"])
 def getSave():
     content = request.args.get("user_id")
-    print(content)
+    
     cond = ["user_id"]
     # result = checkParm(cond, content)
     if(content == ""):

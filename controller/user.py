@@ -25,10 +25,10 @@ def login():
     #         result["message"] = "登入異常"
     # else:
     #     result["message"] = "登入異常"
-    if len(data) == 1:
+    if len(data["data"]) == 1:
         result["message"] = "登入成功"
         result["sucess"] = True
-    elif len(data) == 0:
+    elif len(data["data"]) == 0:
         result["message"] = "登入失敗"
     else:
         result["message"] = "登入異常"
