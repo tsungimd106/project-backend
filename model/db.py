@@ -36,13 +36,13 @@ class DB():
                 charset="utf8")
             if connection.is_connected():
                 # 顯示資料庫版本
-                db_Info = connection.get_server_info()
-                print("資料庫版本：", db_Info)
+                # db_Info = connection.get_server_info()
+                # print("資料庫版本：", db_Info)
                 # 執行傳入的sql 指令
                 cursor = connection.cursor(dictionary=True)
                 if(isinstance(sqlstr, list)):
                     result = []
-                    for sqlstrItem in sqlstr:
+                    for sqlstrItem in sqlstr:                        
                         cursor.execute(sqlstrItem["sql"])
                         rows = cursor.fetchall()
                         result.append(
