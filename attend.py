@@ -6,15 +6,15 @@ import numpy as np
 from bs4 import BeautifulSoup
 import re
 
-'''def findFigure():
+def findFigure():
     sqlstr = "select id,name from politician"
     return DB.execution(DB.select, sqlstr)
 
-def returnAttend(attendance):
-    sqlstr = "insert into politician(attendance) VALUES (%s)" % (
-        attendance)
-    return DB.execution(DB.create, sqlstr)'''
-
+def returnAttend(name):
+    sqlstr = "insert into attendance(id,attend) VALUES (%s,%s)" % (
+        name,avg)
+    return DB.execution(DB.create, sqlstr)
+    
 
 for page in range(1, 407):
     response = requests.get(
@@ -43,6 +43,6 @@ for page in range(1, 407):
                 sum = sum+i
                 avg = sum/2
 
-    print("總分:", sum)
+    #print("總分:", sum)
     print("平均分數",avg)
 
