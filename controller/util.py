@@ -3,12 +3,22 @@ import json
 from coder import MyEncoder
 
 
-def checkParm(cond, content):
+def checkParm(cond, content, option=None):
     res = ""
+    result = {}
     for i in cond:
+        print(i)
         if(i not in content.keys()):
             res += "缺少必要參數 %s\n" % i
-    return res
+            break
+        else:
+            result[i] = content[i]
+    print("-"*7)
+    if option is not None and len(res) == 0:
+        for i in option:
+            print(i, option[i])
+            result[i] = option[i]
+    return res if len(res) > 0 else result
 
 
 def ret(result):

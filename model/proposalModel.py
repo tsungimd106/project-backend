@@ -4,17 +4,19 @@ import json
 
 def list(data):
     strCond = ""
+    page = int(data["page"]) if data["page"] != None else 0
     if (isinstance(data, dict)):
         for i in data.keys():
-            strCond += " %s =\"%s\" and" % (i, data[i])
-    sqlstr = "select p.*,s.status ,pc.category_id,h.hashtag_name,f.name %s %s %s %s %s %s %s " % (
+            strCond += " %s =\"%s\" and" % (i, data[i]) if i!="page" else ""
+    sqlstr = "select p.*,s.status ,pc.category_id,h.hashtag_name,f.name %s %s %s %s %s %s  " % (
         "from proposal as p join `status`  as s on p.status_id=s.id",
-        "join (select * from proposal group by id having term =10 limit 50) as t  on p.id=t.id",
+        "join (select * from proposal group by id having term =10  %s limit %d,20) as t  on p.id=t.id" % (
+            "where " + strCond[0:len(strCond)-3] if len(strCond) > 0 else "", page*50),
         "left join proposal_category as pc on p.id=pc.propsoal_id",
         "left join hashtag as h on pc.category_id=h.id",
         "left join proposer as er on p.id=er.proposal_id",
-        "left join figure as f on er.politician_id=f.id",
-        "where " + strCond[0:len(strCond)-3] if len(strCond) > 0 else "")
+        "left join figure as f on er.politician_id=f.id"
+    )
     rows = DB.execution(DB.select, sqlstr)
     result = []
     pdf = set()
@@ -79,19 +81,19 @@ def msgList(proposal_id, user_id):
                 proposal_id),
          "name": "detail"},
         {"sql": "select * from favorite where user_id=\"%s\" and proposal_id=\"%s\"" %
-         (proposal_id, user_id), "name": "heart"},{"sql":"select * from rule","name":"rule"}
+         (proposal_id, user_id), "name": "heart"}, {"sql": "select * from rule", "name": "rule"}
     ]
     rows = DB.execution(DB.select, sqlstr)
     result = {}
     category = set()
     proposer = set()
-    print(rows)
+    # print(rows)
     for i in rows["data"][1]["data"]:
         category.add(i["hashtag_name"])
         proposer.add(i["name"])
-    rows["data"][1]["data"][0]["name"]=proposer
-    rows["data"][1]["data"][0]["category"]=category
-    rows["data"][1]["data"]=rows["data"][1]["data"][0]
+    rows["data"][1]["data"][0]["name"] = proposer
+    rows["data"][1]["data"][0]["category"] = category
+    rows["data"][1]["data"] = rows["data"][1]["data"][0]
     return rows
 
 

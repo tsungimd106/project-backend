@@ -75,7 +75,7 @@ def report():
     content = request.json
     cond = ["report_id", "manager_id", "check", "time"]
     t = checkParm(cond, content)
-    if(t == ""):
+    if(isinstance(t, dict)):
         return ret(manageModel.reportCheck(content.check, content.report_id, content.manager_id,))
     else:
         return ret({"success": False, "message": t})
