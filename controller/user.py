@@ -1,8 +1,9 @@
 from flask import Blueprint, request, Response
-from model import userModel
+from model import userModel, proposalModel
 import json
 from coder import MyEncoder
 from flask import app
+from .util import ret
 
 userProfile = Blueprint("user", __name__, url_prefix="/user")
 
@@ -24,13 +25,13 @@ def login():
     #         result["message"] = "登入異常"
     # else:
     #     result["message"] = "登入異常"
-    if len(data) == 1:
-            result["message"] = "登入成功"
-            result["sucess"] = True
-    elif len(data) == 0:
-            result["message"] = "登入失敗"
+    if len(data["data"]) == 1:
+        result["message"] = "登入成功"
+        result["sucess"] = True
+    elif len(data["data"]) == 0:
+        result["message"] = "登入失敗"
     else:
-            result["message"] = "登入異常"
+        result["message"] = "登入異常"
 
     return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
 
@@ -38,41 +39,55 @@ def login():
 @userProfile.route("/sign", methods=["POST"])
 def sign():
     content = request.json
-    cond = ["account", "password", "age", "sex", "areaid","name"]
+    cond = ["account", "password", "age", "sex", "areaid", "name"]
     result = {"success": False, "message": ""}
     for i in cond:
         if(i not in content.keys()):
             result["message"] += "缺少必要參數 %s\n" % i
     if(result["message"] == ""):
         data = userModel.sign(content["account"], content["password"],
-                              content["age"], content["sex"], content["areaid"],content["name"])
+                              content["age"], content["sex"], content["areaid"], content["name"])
         print(data)
         if(data["success"]):
             result["message"] = "註冊成功"
             result["success"] = True
         else:
-            result["message"]="註冊異常"
+            result["message"] = "註冊異常"
     return Response(json.dumps(result, cls=MyEncoder))
+
 
 @userProfile.route("/findUserarea", methods=["GET"])
 def findUserarea():
     content = request.json
     area = content["area"]
     data = userModel.findUserarea(area)
-    return Response(json.dumps(data,cls=MyEncoder),mimetype="application/json")
+    return Response(json.dumps(data, cls=MyEncoder), mimetype="application/json")
+
+
+@userProfile.route("/<u_id>",methods=["GET"])
+def getUser(u_id):  
+    return ret(userModel.user(u_id))
+    
+
+@userProfile.route("/",methods=["POST"])
+def user():
+    content=request.json
+    return ret(userModel.user(content["user_id"]))
+
 
 @userProfile.route("/", methods=["PUT"])
 def edit():
     content = request.json
     cond = ["account", "oldPassword", "password", "passwordConfire"]
     result = {"success": False, "message": ""}
+    
     for i in cond:
         if(i not in content.keys()):
             result["message"] += "缺少必要參數 %s\n" % i
     if(result["message"] == ""):
         oldPasswordFromDB = userModel.findPasswordByAccount(content["account"])
         if(oldPasswordFromDB["success"]):
-            oldPasswordFromDB=oldPasswordFromDB["data"]
+            oldPasswordFromDB = oldPasswordFromDB["data"]
             if(len(oldPasswordFromDB) == 1):
                 oldPasswordFromDB = oldPasswordFromDB[0]["password"].decode()
                 if(oldPasswordFromDB):
@@ -92,6 +107,7 @@ def edit():
                 result["message"] = "帳號異常"
     return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
 
+
 @userProfile.route("/", methods=["PATCH"])
 def changeProfile():
     content = request.json
@@ -105,6 +121,16 @@ def changeProfile():
     print(data)
     result = {"success": False, "message": "修改異常", "data": data}
     if(data["success"]):
-        result["success"]=True
-        result["message"]="修改成功"
+        result["success"] = True
+        result["message"] = "修改成功"
     return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
+
+
+@userProfile.route("/msg/<u_id>", methods=["GET"])
+def getMsg(u_id):
+    return ret(proposalModel.msgListByUser(u_id))
+
+
+@userProfile.route("vote/<u_id>", methods=["GET"])
+def getVote(u_id):
+    return ret("")
