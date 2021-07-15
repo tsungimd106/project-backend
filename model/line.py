@@ -20,7 +20,7 @@ class lineModule:
                                    quick_reply=QuickReply(items=[
                                        QuickReplyButton(action=URIAction(
                                            label='個人檔案',
-                                           uri='https://taipei.app/redirect/%s/user' %webUserid
+                                           uri='https://taipei.app/#/redirect/%s/user' %webUserid
                                        ))
                                    ]))
         else:
