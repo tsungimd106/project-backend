@@ -5,7 +5,7 @@ from coder import MyEncoder
 
 import json
 import sys
-# from model.line import lineModule
+from model import line
 from controller import( user,politician,proposal,manage)
 
 #  ----------------------- 
@@ -16,7 +16,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage
+    MessageEvent, TextMessage,TextSendMessage
 )
 
 from flask_cors import CORS
@@ -30,8 +30,8 @@ app.register_blueprint(politician.politicianAPI)
 app.register_blueprint(proposal.proposalAPI)
 app.register_blueprint(manage.manageAPI)
 line_bot_api = LineBotApi(
-    "JFkmqeDZk4E5qf6W2awhVwtKPKCYXCG7BXu8PgaSv3GAS4PxqYGtC/96OTk3L0sG6zZnZtRtJRA2htHC2v6gAw01UE7KE2RYeGdvZF9epTkIH8DjmeeuA32vz3pcTnG7n5XzxU8jDyYzUeFlmI2SXgdB04t89/1O/w1cDnyilFU=")
-handler = WebhookHandler("02402a84858b56f54b5a34fc1928d4a4")
+    "Oh4trCIb7cjh58YORcKoqqCHjKzg16U1HCCcVWrbBpplSt2LrUEzBNH+Yyjq5TWU9XG8b7LLZFxbAgYQW8nRufgVZeF4586KCRzFvxN82PLeWFEkKPbgGQwC7wV8BJ+3D5fCqFqE6f7/Js57OwQ1ZgdB04t89/1O/w1cDnyilFU=")
+handler = WebhookHandler("41121bf7a06d828660ce43a388cded2f")
 #  ----------------------- 
 
 api =Api(app)
@@ -42,9 +42,7 @@ api =Api(app)
 CORS(app)
 
 
-@app.route('/', methods=["POST"])
-def line():
-    return "ok"
+ 
 
 
 @app.route('/get', methods=["GET","OPTIONS"])
@@ -58,8 +56,8 @@ def callback():
     signature = request.headers['X-Line-Signature']
     # get request body as text
     body = request.get_data(as_text=True)
-    # app.logger.info("Request body: " + body)
-    print(body)
+    
+    app.logger.info("Request body: " + body)
    # handle webhook body
     try:
         handler.handle(body, signature)
@@ -70,7 +68,7 @@ def callback():
     
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    data = lineModule.handle_messenge(event)
+    data = line.lineModule.handle_messenge(event)    
     line_bot_api.reply_message(event.reply_token, data)
 
 
