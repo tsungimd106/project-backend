@@ -1,16 +1,20 @@
-# -*- coding:utf-8 -*-
+# -*- coding: utf-8 -*-
 from re import M
 from model.db import DB
 import xiangshi as xs
+import jieba.analyse
+import jieba
 
 # 政見分類
 # 從資料庫裡抓取政見
+
 
 def findPolicy():
     sqlstr = "select id,content from policy"
     return DB.execution(DB.select, sqlstr)
 
 # 從資料庫裡抓取類別
+
 
 def findCategory():
     sqlstr = "select id,name from category"
@@ -23,28 +27,33 @@ def returnCategory(policy_id, category_id):
         policy_id, category_id)
     return DB.execution(DB.create, sqlstr)
 
+
 # 待匯入完畢後跑迴圈
 policy = findPolicy()
 category = findCategory()
+
+'''sentence = category["data"]
+keywords = jieba.analyse.extract_tags(
+    sentence, topK=20, withWeight=True, allowPOS=('n', 'nr', 'ns'))
+print(keywords)'''
 
 # 分類與政見逐條比對
 print(category)
 for j in category["data"]:
     m = [j["name"]]
-    print('第1個元素:', j)
-
+    #print('第1個元素:', j)
     for i in policy["data"]:
         n = [i["content"].decode(encoding='utf-8', errors='ignore')]  # 政見
         s = i["content"]
 
         result = xs.cossim(m, n)
-        
 
-        print(result>0.1)
-        print(result)
-        if result > 0.1:
+        if result > 0.5:
+            #print("類別:", m)
+            #print("政見:", n)
+            #print(result>0.1)
+            #print("結果", result)
             print(n)
-            print("enter")
-            returnCategory(i["id"],j["id"])
-            print("end")
 
+            # returnCategory(i["id"],j["id"])
+    
