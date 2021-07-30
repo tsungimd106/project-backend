@@ -19,7 +19,7 @@ class lineModule:
                                    quick_reply=QuickReply(items=[
                                        QuickReplyButton(action=URIAction(
                                            label='點我進網站',
-                                           uri='https://taipei.app' 
+                                           uri='https://taipei.app/#/figure/492' 
                                        ))
                                    ]))
         elif(msg == "個人檔案"):
