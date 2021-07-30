@@ -59,7 +59,14 @@ def user(user_id):
          user_id, "name": "user"},
         {"sql": "select * from area", "name": "area"},
         {
-            "sql": ("select * from favorite as f join proposal as p on f.proposal_id=p.id join status as s on p.status_id=s.id where user_id=\"%s\"" % user_id),
+            "sql": ("select p.*,s.status ,fi.name as f_name,c.name as c_name from favorite as f  %s %s %s %s %s %s %s where user_id=\"%s\"  group by p.id,er.politician_id,c_name"
+                    % ("join proposal as p on f.proposal_id=p.id ",
+                       "join status as s on p.status_id=s.id",
+                       "left join proposer as er on p.id=er.proposal_id",
+                       "left join politician as po on er.politician_id=po.id",
+                       "left join figure as fi on po.figure_id=fi.id",
+                       "left join proposal_category as pc on p.id=pc.propsoal_id",
+                       "left join category as c on pc.category_id=c.id", user_id)),
             "name": "save"},
         {
             "sql": "select m.*,p.title from message as m join proposal as p on m.proposal_id = p.id group by m.id having user_id=\"%s\"" % (
@@ -71,6 +78,30 @@ def user(user_id):
         },
         {"sql": "select user_id,p.*,s.type from user_proposal as up  join stand as s on up.stand_id=s.id join proposal as p on up.proposal_id=p.id group by p.id having user_id =\"%s\"" % user_id, "name": "proposal_vote"}]
     data = DB.execution(DB.select, sqlstr)
+    temp = {}
+    f_name = set()
+    c_name = set()
+    save = []
+    proposal_id = -1
+    for i in data["data"][2]["data"]:
+        if i["id"] != proposal_id:
+            if proposal_id != -1:
+                temp["f_name"] = f_name
+                temp["c_name"] = c_name
+                save.append(temp)
+                temp = i
+                f_name = set()
+                c_name = set()
+            else:
+                temp=i
+            f_name.add(i["f_name"])
+            c_name.add(i["c_name"])
+            proposal_id=i["id"]
+
+    temp["f_name"] = f_name
+    temp["c_name"] = c_name
+    save.append(temp)
+    data["data"][2]["data"] = save
     msg = []
     proposal_id = -1
     title = ""
@@ -87,7 +118,7 @@ def user(user_id):
             proposal_id = i["proposal_id"]
             item["title"] = i["title"]
             item["proposal"] = i["proposal_id"]
-        m.append(i["content"])
+        m.append({"content": i["content"], "time": i["time"]})
     item["content"] = m
     msg.append(item)
     data["data"][3]["data"] = msg
@@ -103,7 +134,7 @@ def user(user_id):
                 policy_vote.append(item)
                 item = {}
                 c = set()
-            policy_id=i["id"]
+            policy_id = i["id"]
             item = i
         c.add(i["c_name"])
     item["c_name"] = c

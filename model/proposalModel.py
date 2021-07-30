@@ -4,51 +4,56 @@ import json
 
 def list(data):
     strCond = ""
+    if (isinstance(data["cond"], dict)):
+        for i in data["cond"].keys():
+            if isinstance(data["cond"][i], type(list)):
+                for j in data["cond"][i]:
+                    strCond += " `%s` =\"%s\" and " % (i, j)
+            else:
+                strCond += " %s =\"%s\" and" % (i, data["cond"][i])
     page = int(data["page"]) if data["page"] != None else 0
-    if (isinstance(data, dict)):
-        for i in data.keys():
-            strCond += " %s =\"%s\" and" % (i, data[i]) if i!="page" else ""
-    sqlstr = "select p.*,s.status ,pc.category_id,h.hashtag_name,f.name %s %s %s %s %s %s  " % (
+    # if (isinstance(data, dict)):
+    #     for i in data.keys():
+    #         strCond += " %s =\"%s\" and" % (i, data[i]) if i!="page" else ""
+    sqlstr = [{"sql": "select p.*,s.status ,pc.category_id,h.hashtag_name,f.name %s %s %s %s %s %s %s  " % (
         "from proposal as p join `status`  as s on p.status_id=s.id",
         "join (select * from proposal group by id having term =10  %s limit %d,20) as t  on p.id=t.id" % (
-            "where " + strCond[0:len(strCond)-3] if len(strCond) > 0 else "", page*50),
+            "and " + strCond[0:len(strCond)-3] if len(strCond) > 0 else "", page*20),
         "left join proposal_category as pc on p.id=pc.propsoal_id",
         "left join hashtag as h on pc.category_id=h.id",
         "left join proposer as er on p.id=er.proposal_id",
-        "left join figure as f on er.politician_id=f.id"
-    )
+        "left join politician as po on po.id=er.politician_id",
+        "left join figure as f on po.figure_id=f.id"
+    ), "name":"list"}, {"sql": "select count(*)/20 as n from proposal as p where term=10 %s  " % ("and"+strCond[0:len(strCond)-3] if len(strCond) > 0 else ""), "name":"page"}]
     rows = DB.execution(DB.select, sqlstr)
+    
     result = []
-    pdf = set()
-    category = set()
-    proposer = set()
-    term = rows["data"][0]["term"]
-    session_Period = rows["data"][0]["session_Period"]
-    session_Time = rows["data"][0]["session_Time"]
-    title = rows["data"][0]["title"]
-    status = rows["data"][0]["status"]
-    now = rows["data"][0]["id"]
-    for i in rows["data"]:
-        if now != i["id"]:
-            result.append({"id": now, "title": title, "pdfUrl": pdf, "category": category, "proposer": proposer,
-                           "session_period": session_Period, "session_Time": session_Time, "status": status})
-            now = i["id"]
-            pdf = set()
-            category = set()
-            proposer = set()
-            term = i["term"]
-            session_Period = i["session_Period"]
-            session_Time = i["session_Time"]
-            status = i["status"]
-            title = i["title"]
-        pdf.add(i["pdfUrl"])
-        proposer.add(i["name"])
-        category.add(i["hashtag_name"])
+    if len(rows["data"][0]["data"]) > 0:
+        pdf = set()
+        category = set()
+        proposer = set()
+        temp = rows["data"][0]["data"][0]
+        now = rows["data"][0]["data"][0]["id"]
+        for i in rows["data"][0]["data"]:
+            if now != i["id"]:
+                temp["pdfUrl"] = pdf
+                temp["category"] = category
+                temp["proposer"] = proposer
+                result.append(temp)
+                now = i["id"]
+                pdf = set()
+                category = set()
+                proposer = set()
+                temp = i
+            pdf.add(i["pdfUrl"])
+            proposer.add(i["name"])
+            category.add(i["hashtag_name"])
 
-    result.append({"id": now, "title": title, "pdfUrl": pdf, "category": category, "proposer": proposer,
-                   "session_period": session_Period, "session_Time": session_Time, "status": status})
-
-    return (result)
+        temp["pdfUrl"] = pdf
+        temp["category"] = category
+        temp["proposer"] = proposer
+        result.append(temp)
+    return ({"list":result,"page":rows["data"][1]["data"]})
 
 
 def msg(account, mes, article_id, parent_id):
