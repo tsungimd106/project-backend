@@ -3,7 +3,7 @@ from model import (politicianModel, userModel)
 from app import MyEncoder
 import json
 from linebot.models import (
-     URITemplateAction,TextSendMessage, ImageSendMessage, StickerSendMessage, QuickReply, QuickReplyButton, MessageAction, URIAction,ButtonsTemplate)
+    URITemplateAction, TextSendMessage, ImageSendMessage, StickerSendMessage, QuickReply, QuickReplyButton, MessageAction, URIAction, ButtonsTemplate)
 
 
 class lineModule:
@@ -19,7 +19,7 @@ class lineModule:
                                    quick_reply=QuickReply(items=[
                                        QuickReplyButton(action=URIAction(
                                            label='點我進網站',
-                                           uri='https://taipei.app/#/figure/492' 
+                                           uri='https://taipei.app/#/figure/492'
                                        ))
                                    ]))
         elif(msg == "個人檔案"):
@@ -31,7 +31,37 @@ class lineModule:
                                            uri='https://taipei.app/redirect/%s/user' % webUserid
                                        ))
                                    ]))
+        elif(msg == "我要查詢選區"):
+            return TextSendMessage(text="點選所在城市",
+                                   quick_reply=QuickReply(items=[
+                                       QuickReplyButton(action=MessageAction(
+                                           label='台北市', text='台北市')),
+                                    QuickReplyButton(action=MessageAction(
+                                           label='新北市', text='新北市')),   
+                                    QuickReplyButton(action=MessageAction(
+                                           label='桃園市', text='新北市')),    
+                                    QuickReplyButton(action=MessageAction(
+                                           label='台中市', text='新北市')),
+                                    QuickReplyButton(action=MessageAction(
+                                           label='台南市', text='新北市')),
+                                    QuickReplyButton(action=MessageAction(
+                                           label='高雄市', text='新北市'))
+                                   ]))
+        elif(msg == "新北市"):
+            return TextSendMessage(text="點選所在區域",
+                                   quick_reply=QuickReply(items=[
+                                       QuickReplyButton(action=MessageAction(
+                                           label='土城區', text='新北市第十選舉區')),
+                                    QuickReplyButton(action=MessageAction(
+                                           label='三峽區', text='新北市第十選舉區')),   
+                                    QuickReplyButton(action=MessageAction(
+                                           label='金山區', text='新北市第十選舉區')),    
+                                    QuickReplyButton(action=MessageAction(
+                                           label='萬里區', text='新北市第十選舉區')),
+                                    QuickReplyButton(action=MessageAction(
+                                           label='石門區', text='新北市第一選舉區')),
+                                    QuickReplyButton(action=MessageAction(
+                                           label='淡水區', text='新北市第一選舉區'))
+                                   ]))
         else:
-            return TextSendMessage(text=msg)
-
-
+            return TextSendMessage(text="")
