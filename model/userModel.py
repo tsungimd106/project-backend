@@ -59,17 +59,29 @@ def user(user_id):
          user_id, "name": "user"},
         {"sql": "select * from area", "name": "area"},
         {
-            "sql": ("select p.*,s.status ,fi.name as f_name,c.name as c_name from favorite as f  %s %s %s %s %s %s %s where user_id=\"%s\"  group by p.id,er.politician_id,c_name"
-                    % ("join proposal as p on f.proposal_id=p.id ",
-                       "join status as s on p.status_id=s.id",
-                       "left join proposer as er on p.id=er.proposal_id",
-                       "left join politician as po on er.politician_id=po.id",
-                       "left join figure as fi on po.figure_id=fi.id",
-                       "left join proposal_category as pc on p.id=pc.propsoal_id",
-                       "left join category as c on pc.category_id=c.id", user_id)),
+            "sql": ("".join([
+                "select p.*,s.status ,fi.name as f_name,c.name as c_name from favorite as f ",
+                "join proposal as p on f.proposal_id=p.id ",
+                "join status as s on p.status_id=s.id ",
+                "left join proposer as er on p.id=er.proposal_id ",
+                "left join politician as po on er.politician_id=po.id ",
+                "left join figure as fi on po.figure_id=fi.id ",
+                "left join proposal_category as pc on p.id=pc.propsoal_id ",
+                "left join category as c on pc.category_id=c.id ",
+                "where user_id= \"",
+                user_id, "\" group by p.id,er.politician_id,c_name "
+            ])),
+
             "name": "save"},
         {
-            "sql": "select m.*,p.title from message as m join proposal as p on m.proposal_id = p.id group by m.id having user_id=\"%s\"" % (
+            "sql": "select m.*,p.title ,c.name,f.name from message as m %s %s %s %s %s %s group by m.id ,c.name,f.name having user_id=\"%s\"" % (
+                " left join proposal as p on m.proposal_id = p.id",
+                " left join proposer as er on p.id=er.proposal_id",
+                "left join politician as po on er.politician_id=po.id ",
+                "left join figure as f on po.figure_id=f.id ",
+                "left join proposal_category as pc on pc.propsoal_id=p.id",
+                "left join category as c on pc.category_id=c.id",
+
                 user_id), "name": "msg"
         },
         {
@@ -93,10 +105,11 @@ def user(user_id):
                 f_name = set()
                 c_name = set()
             else:
-                temp=i
-            f_name.add(i["f_name"])
-            c_name.add(i["c_name"])
-            proposal_id=i["id"]
+                temp = i
+        f_name.add(i["f_name"])
+        print(f_name)
+        c_name.add(i["c_name"])
+        proposal_id = i["id"]
 
     temp["f_name"] = f_name
     temp["c_name"] = c_name
@@ -127,7 +140,7 @@ def user(user_id):
     policy_vote = []
     policy_id = -1
     for i in data["data"][4]["data"]:
-        print(i)
+      
         if i["id"] != policy_id:
             if policy_id != -1:
                 item["c_name"] = c
