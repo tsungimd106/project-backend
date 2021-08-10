@@ -1,14 +1,18 @@
 import requests
-from bs4 import BeautifulSoup
+from model.db import DB
 import json
 
-response = requests.get(
-    "https://www.cec.gov.tw/central/cmsList/110news?order=asc&offset=0&limit=10&begin=&end=&title=")
+def returnTitle(lateestnewsTitle, createDate):
+    sqlstr = "insert into article (title, createTime) VALUES (%s, %s)" % (
+        lateestnewsTitle, createDate)
+    print(sqlstr)
+    return DB.execution(DB.create, sqlstr)
 
 
-soup = BeautifulSoup(response.text, "html.parser")
-print(soup.prettify())  #輸出排版後的HTML內容
+f = open('lastestnews.json','r',encoding='utf-8')
+data = json.load(f)
+#print(data,type(data))
 
-result = soup.find_all('title')
-    
-print(result)
+for i in data:
+    #print(i['title']+i['createDateStr'])
+    returnTitle(i['title'], i['createDateStr'])
