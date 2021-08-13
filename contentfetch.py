@@ -33,15 +33,16 @@ def po():
     data = json.loads(soup.text)
     sql=[]
     for i in data:
-        if i["createDateStr"][0:3]=="110":
+        if i["createDateStr"][0:3]=="110": #篩選今年的公告
 
             c = gg(DETAIL+i["publishUrl"]+'/'+str(i["contentId"]))
-            c = re.sub(r'"',"'" , c)
-            c = re.sub(r"\n", '', c)
+            c = re.sub(r'"',"'" , c) #把雙引號取代成單引號
+            c = re.sub(r"\n", '', c) #把換行取代成空白
             title = re.sub(r"'", '"', i["title"])
-            date = re.sub(r"\.","-",i["createDateStr"])
+            date = re.sub(r"\.","-",i["createDateStr"]) #日期格式修改避免資料庫格式跑掉
         sql.append({"sql":"insert into article (title,content,type,createTime) VALUES(\"%s\", \"%s\", %s,\"%s\")" % (
         title,c,2,"2021"+date[3:]),"name":i["contentId"]})
+    
     return DB.execution(DB.create, sql)
 
 
@@ -54,10 +55,13 @@ def gg(url):
     chrome.get(url)
     soup=BeautifulSoup(chrome.page_source, 'html.parser')
     content=soup.find("div", {"class": "main-cont"})
+    #公告是純文字的
     downloadlist=soup.find("div", {"class": "downloadlist"})
+    #公告有附檔的
 
     chrome.close()
     return (content.prettify()) + (downloadlist.prettify())
+    #輸出排版後的兩者合併
     
 
 po()
