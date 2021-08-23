@@ -73,13 +73,13 @@ def user(user_id):
             "name": "save"},
         {
             "sql": "".join([
-                "select m.*,p.title ,c.name,f.name from message as m",
+                "select m.*,p.title ,c.name as c_name ,f.name as f_name from message as m",
                 " left join proposal as p on m.proposal_id = p.id",
                 " left join proposer as er on p.id=er.proposal_id",
                 " left join politician as po on er.politician_id=po.id ",
                 " left join figure as f on po.figure_id=f.id ", "left join proposal_category as pc on pc.propsoal_id=p.id",
                 " left join category as c on pc.category_id=c.id",
-                " group by m.id ,c.name,f.name having user_id=\"", user_id, "\""
+                " group by m.id ,c.name,f.name having user_id=\"", user_id, "\" order by p.id,m.id"
 
             ]), "name": "msg"
         },
@@ -93,25 +93,45 @@ def user(user_id):
     data["data"][2]["data"] = group(data["data"][2]["data"], [
                                     "f_name", "c_name"], "id")
     data["data"][4]["data"] = group(data["data"][4]["data"], ["c_name"], "id")
+    # data["data"][3]["data"]=group(data["data"][3]["data"],["f_name","c_name"],"proposal_id")
     msg = []
-    proposal_id = -1
+    proposal_id = data["data"][3]["data"][0]["proposal_id"]
+    m_id=data["data"][3]["data"][0]["id"]
     title = ""
     item = {}
     m = []
+    abc=0
+    c_name=set()
+    f_name=set()
     for i in data["data"][3]["data"]:
         if i["proposal_id"] != proposal_id:
             if proposal_id != -1:
                 item["content"] = m
+                item["c_name"]=c_name
+                item["f_name"]=f_name
+                item["proposal_id"]=i["proposal_id"]
+                item["title"]=i["title"]
+                c_name=set()
+                f_name=set()
                 msg.append(item)
                 item = {}
                 m = []
             proposal_id = i["proposal_id"]
-            item["title"] = i["title"]
-            item["proposal"] = i["proposal_id"]
-        m.append({"content": i["content"], "time": i["time"]})
+        if(m_id!=i["id"]):
+            m_id=i["id"]
+            abc+=1
+            m.append({"content": i["content"], "time": i["time"],"postive":i["postive"],"id":i["id"]})
+        c_name.add(i["c_name"])
+        f_name.add(i["f_name"])
     item["content"] = m
+    item["c_name"]=c_name
+    item["f_name"]=f_name
+    item["proposal_id"]=i["proposal_id"]
+    item["title"]=i["title"]
     msg.append(item)
     data["data"][3]["data"] = msg
+    print(abc)
+    # data["data"][3]["data"]=group(data["data"][3]["data"],["f_name","c_name"],"proposal_id")
     return data
 
 
