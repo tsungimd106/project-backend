@@ -1,33 +1,47 @@
-# 留言正負向分析
-# -*- coding: utf-8 -*-
+#-*- coding: utf-8 -*-
 from model.db import DB
 from snownlp import SnowNLP
 from snownlp import sentiment
+import json
 
 # 從資料庫裡抓取提案
 
-
-'''def findMessage(id):
+def findMessage():
     sqlstr = "select id,content from message"
     return DB.execution(DB.select, sqlstr)
 
+def returnMessage(postive,iid):
+    sqlstr = "update message set postive = %s where id=\"%s\"" % (
+        postive,iid)
+    print(sqlstr)
+    return DB.execution(DB.create, sqlstr)
 
-data = findMessage(14)
-print(data)'''
+def stringToList(string):
+    listRes = list(string.split(" "))
+    return listRes
 
-l=["這不錯優","為甚麼提案可以審過","不對ㄟ","這提案好奇怪","這個提案根本不好","我好喜歡這篇提案","哈哈哈哈","HELLO WORLD","太強了"]
+datas = findMessage()
 
-#保存情感极性值小于等于0.3的结果为负面情感结果
-f1=open('neg.txt','w',encoding='utf-8')
 
-#保存情感极性值大于0.3的结果为正面情感结果
-f2=open('pos.txt','w',encoding='utf-8')
+#小於等於0.4的结果為負面情感結果
+#f1=open('neg.txt','w',encoding='utf-8')
 
-for j in l:
-    s=SnowNLP(j)
+#大於0.4的結果為正面情感結果
+#f2=open('pos.txt','w',encoding='utf-8')
+
+
+for i in datas["data"]:
+    a = str(i["content"], encoding='utf-8')
+    stringToList(a)
+
+    s=SnowNLP(a)
     if s.sentiments <=0.4:
-        f1.write(j+'\t'+str(s.sentiments)+'\n')
+        #f1.write(a+'\t'+str(s.sentiments)+'\n')
+        returnMessage(s.sentiments,i["id"])
     else:
-        f2.write(j + '\t' + str(s.sentiments) + '\n')
-f1.close()
-f2.close()
+        #f2.write(a + '\t' + str(s.sentiments) + '\n')
+        returnMessage(s.sentiments,i["id"])
+                
+#f1.close()
+#f2.close()
+
