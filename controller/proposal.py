@@ -54,7 +54,6 @@ def vote():
     t = checkParm(cond, content)
     if(isinstance(t, str)):
         data = {"success": False, "mes": t}
-
     else:
         data = proposalModel.vote(
             userid=content[cond[0]], sp_id=content[cond[1]], proposal_id=content[cond[2]])
@@ -65,7 +64,6 @@ def vote():
 @proposalAPI.route("/save", methods=["GET"])
 def getSave():
     content = request.args.get("user_id")
-
     cond = ["user_id"]
     # result = checkParm(cond, content)
     if(content == ""):

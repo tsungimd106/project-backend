@@ -1,6 +1,6 @@
 from model.db import DB
 import json
-
+from model.util import group
 
 def list(data):
     strCond = ""
@@ -51,7 +51,6 @@ def getList(data):
         "FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id",
         "where %s " % strCond if len(strCond) > 0 else ""
     )
-    # print(sqlstr)
     rows = DB.execution(DB.select, sqlstr)
 
     return rows
@@ -79,12 +78,8 @@ def getDetail(data):
         }
     ]
 
-    print(sqlstr)
     rows = DB.execution(DB.select, sqlstr)
-    temp = []
-    # for i in rows.data[1]["data"]:
-    #     print(i)
-    # print(rows)
+    rows["data"][1]["data"]=group(rows["data"][1]["data"],["name"],"id")
     return rows
 
 
@@ -99,7 +94,6 @@ def changePolitician(data, id):
             strCond += " %s = \"%s\" ," % (i, data[i])
     sqlstr = "update user set %s where id=\"%s\"" % (
         strCond[0:len(strCond)-1], id)
-    print(sqlstr)
     return DB.execution(DB.update, sqlstr)
 
 

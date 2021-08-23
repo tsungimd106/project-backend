@@ -1,5 +1,7 @@
 from model.db import DB
+from model.util import group
 import json
+import math
 
 
 def list(data):
@@ -27,33 +29,9 @@ def list(data):
     ), "name":"list"}, {"sql": "select count(*)/20 as n from proposal as p where term=10 %s  " % ("and"+strCond[0:len(strCond)-3] if len(strCond) > 0 else ""), "name":"page"}]
     rows = DB.execution(DB.select, sqlstr)
     
-    result = []
-    if len(rows["data"][0]["data"]) > 0:
-        pdf = set()
-        category = set()
-        proposer = set()
-        temp = rows["data"][0]["data"][0]
-        now = rows["data"][0]["data"][0]["id"]
-        for i in rows["data"][0]["data"]:
-            if now != i["id"]:
-                temp["pdfUrl"] = pdf
-                temp["category"] = category
-                temp["proposer"] = proposer
-                result.append(temp)
-                now = i["id"]
-                pdf = set()
-                category = set()
-                proposer = set()
-                temp = i
-            pdf.add(i["pdfUrl"])
-            proposer.add(i["name"])
-            category.add(i["hashtag_name"])
-
-        temp["pdfUrl"] = pdf
-        temp["category"] = category
-        temp["proposer"] = proposer
-        result.append(temp)
-    return ({"list":result,"page":rows["data"][1]["data"]})
+    
+    result=group(rows["data"][0]["data"],["hashtag_name","name"],"id")[0]
+    return ({"list":result,"page":math.ceil(rows["data"][1]["data"][0]["n"])})
 
 
 def msg(account, mes, article_id, parent_id):
@@ -149,6 +127,6 @@ def change(data, id):
 def getCond():
     sqlstr = [
         {"sql":  "select term as name from proposal group by term;", "name": "屆別"},
-        {"sql": "select s.status as name from proposal as p join status as s on p.status_id=s.id group by status_id;", "name": "狀態"}
+        {"sql": "select s.id,s.status as name from proposal as p join status as s on p.status_id=s.id group by status_id;", "name": "狀態"}
     ]
     return DB.execution(DB.select, sqlstr)
