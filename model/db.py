@@ -27,6 +27,7 @@ class DB():
 
     @staticmethod
     def execution(type, sqlstr):
+        # print(sqlstr)
         try:
             connection = mysql.connector.connect(
                 host=DB.__host,

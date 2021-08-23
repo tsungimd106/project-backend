@@ -10,14 +10,21 @@ proposalAPI = Blueprint("proposal", __name__, url_prefix="/proposal")
 
 @proposalAPI.route("", methods=["GET"])
 def find():
-    cond = ["id", "term",  "ststusid", ]
+    cond = ["id", "term",  "status_id", ]
     content = request.args
-    print(content)
-    after = normalize_query(content)
-    print(after)
-    # print(normalize_query_param(content))
+    after = normalize_query(content)   
+    condData={}
+    for i in after.keys():
+        if i in cond:
+            condData[i]=after[i]
+    data={}
+    data["cond"]=condData
+    data["page"]=after["page"] if "page" in after.keys() else 0
+    # for i in cond:
+    
+    
 
-    return ret(proposalModel.list(after))
+    return ret(proposalModel.list(data))
 
 
 @proposalAPI.route("/msg", methods=["POST"])
@@ -47,7 +54,6 @@ def vote():
     t = checkParm(cond, content)
     if(isinstance(t, str)):
         data = {"success": False, "mes": t}
-
     else:
         data = proposalModel.vote(
             userid=content[cond[0]], sp_id=content[cond[1]], proposal_id=content[cond[2]])
@@ -58,7 +64,6 @@ def vote():
 @proposalAPI.route("/save", methods=["GET"])
 def getSave():
     content = request.args.get("user_id")
-
     cond = ["user_id"]
     # result = checkParm(cond, content)
     if(content == ""):

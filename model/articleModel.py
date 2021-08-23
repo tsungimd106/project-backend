@@ -14,5 +14,4 @@ def change(data, id):
             strCond += " %s = \"%s\" ," % (i, data[i])
     sqlstr = "update article set %s where id=\"%s\"" % (
         strCond[0:len(strCond)-1], id)
-    print(sqlstr)
     return DB.execution(DB.update, sqlstr)
