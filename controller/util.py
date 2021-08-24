@@ -14,17 +14,18 @@ def checkParm(cond, content, option=None):
         else:
             result[i] = content[i]
     print("-"*7)
-    if option is not None and len(res) == 0:
-        for i in option:
-            print(i, option[i])
-            result[i] = option[i]
+    # if option is not None and len(res) == 0:
+    #     for i in option:
+    #         print(i, option[i])
+    #         result[i] = option[i]
     return res if len(res) > 0 else result
 
 
 def ret(result):    
     mes="成功" if result["success"] else "失敗"
+    resultData=result["data"] if "data" in result else {}
     # return Response(json.dumps({"d":result["data"],"message":mes}, cls=MyEncoder), mimetype='application/json')    
-    return make_response(json.dumps({"D":result["data"],"message":mes,"success":result["success"]}, cls=MyEncoder))
+    return make_response(json.dumps({"D":resultData,"message":mes,"success":result["success"]}, cls=MyEncoder))
 
 # 好像不能用
 
