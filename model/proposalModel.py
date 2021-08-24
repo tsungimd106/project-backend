@@ -26,12 +26,13 @@ def list(data):
         "left join proposer as er on p.id=er.proposal_id",
         "left join politician as po on po.id=er.politician_id",
         "left join figure as f on po.figure_id=f.id"
-    ), "name":"list"}, {"sql": "select count(*)/20 as n from proposal as p where term=10 %s  " % ("and"+strCond[0:len(strCond)-3] if len(strCond) > 0 else ""), "name":"page"}]
+    ), "name":"list"},
+        {"sql": "select count(*)/20 as n from proposal as p where term=10 %s  " % ("and"+strCond[0:len(strCond)-3] if len(strCond) > 0 else ""),
+         "name":"page"}]
     rows = DB.execution(DB.select, sqlstr)
-    
-    
-    result=group(rows["data"][0]["data"],["hashtag_name","name"],"id")[0]
-    return ({"list":result,"page":math.ceil(rows["data"][1]["data"][0]["n"])})
+
+    result = group(rows["data"]["list"], ["hashtag_name", "name"], "id")
+    return ({"data": {"list": result, "page": math.ceil(rows["data"]["page"][0]["n"]), }, "success": True})
 
 
 def msg(account, mes, article_id, parent_id):
@@ -55,12 +56,13 @@ def msgList(proposal_id, user_id):
     sqlstr = [
         {"sql": "select * from message where proposal_id=\"%s\"" %
             (proposal_id), "name": "msg"},
-        {"sql": " select p.id,p.title,p.pdfUrl ,s.status,f.name ,h.hashtag_name from proposal as p %s  %s %s  %s  %s where   p.id=\"%s\" " %
-            ("left join proposer as er on er.proposal_id=p.id",
-             "left join figure as f on er.politician_id=f.id",
-             "left join status as s on p.status_id=s.id",
-             "left join proposal_category as pc on p.id=pc.propsoal_id",
-             "left join hashtag as h on pc.category_id=h.id",
+        {"sql": " select p.id,p.title,p.pdfUrl ,s.status,f.name ,h.hashtag_name from proposal as p %s  %s %s  %s  %s %s where   p.id=\"%s\" " %
+            (" left join proposer as er on er.proposal_id=p.id",
+             " left join politician as polit on polit.id=er.politician_id",
+             " left join figure as f on polit.figure_id=f.id ",
+             " left join status as s on p.status_id=s.id",
+             " left join proposal_category as pc on p.id=pc.propsoal_id",
+             " left join hashtag as h on pc.category_id=h.id",
                 proposal_id),
          "name": "detail"},
         {"sql": "select * from favorite where user_id=\"%s\" and proposal_id=\"%s\"" %
@@ -68,15 +70,19 @@ def msgList(proposal_id, user_id):
     ]
     rows = DB.execution(DB.select, sqlstr)
     result = {}
-    category = set()
-    proposer = set()
-    # print(rows)
-    for i in rows["data"][1]["data"]:
-        category.add(i["hashtag_name"])
-        proposer.add(i["name"])
-    rows["data"][1]["data"][0]["name"] = proposer
-    rows["data"][1]["data"][0]["category"] = category
-    rows["data"][1]["data"] = rows["data"][1]["data"][0]
+    print(rows["data"]["detail"])
+    rows["data"]["detail"] = group(rows["data"]["detail"], [
+                                   "name", "hashtag_name"], "id")[0]
+    print(rows["data"]["detail"])
+    # category = set()
+    # proposer = set()
+    # # print(rows)
+    # for i in rows["data"]["detail"]:
+    #     category.add(i["hashtag_name"])
+    #     proposer.add(i["name"])
+    # rows["data"]["detail"][0]["name"] = proposer
+    # rows["data"]["detail"][0]["category"] = category
+    # rows["data"]["detail"] = rows["data"]["detail"][0]
     return rows
 
 

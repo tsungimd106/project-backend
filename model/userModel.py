@@ -4,25 +4,22 @@ from model.util import group
 
 
 def login(account, password):
-    sqlstr = "select * from user where id=\"%s\" and password = md5(\"%s\")" % (
-        account, password)
+    sqlstr = f"select * from user where id=\"{account}\" and password = md5(\"{password}\")"
     return (DB.execution(DB.select, sqlstr))
 
 
 def findPasswordByAccount(account):
-    sqlstr = "select password from user where id=\"%s\"" % account
+    sqlstr = f"select password from user where id=\"{account}\"" 
     return DB.execution(DB.select, sqlstr)
 
 
 def changePassword(account, password):
-    sqlstr = "update user set password = \"%s\" where id = \"%s\"" % (
-        password, account)
+    sqlstr = f"update user set password = \"{password}\" where id = \"{account}\"" 
     return DB.execution(DB.update, sqlstr)
 
 
-def sign(account, password, age, sex, area, name):
-    sqlstr = "insert into user(id, password,age,gender,area_id,name) VALUES (\"%s\", \"%s\" ,\"%s\" ,\"%s\",\"%s\",\"%s\")" % (
-        account, password, age, sex, area, name)
+def sign(account, password, age, gender, area, name):
+    sqlstr = f"insert into user(id, password,age,gender,area_id,name) VALUES (\"{account}\", \"{password}\" ,\"{age}\" ,\"{gender}\",\"{area}\",\"{name}\")" 
     return DB.execution(DB.create, sqlstr)
 
 
@@ -30,9 +27,8 @@ def changeProfile(data, account):
     strCond = ""
     if(isinstance(data, dict)):
         for i in data.keys():
-            strCond += " %s = \"%s\" ," % (i, data[i])
-    sqlstr = "update user set %s where id=\"%s\"" % (
-        strCond[0:len(strCond)-1], account)
+            strCond += f" {i} = \"{data[i]}\" ," 
+    sqlstr = f"update user set {strCond[0:len(strCond)-1]} where id=\"{account}\"" 
     return DB.execution(DB.update, sqlstr)
 
 
@@ -42,13 +38,12 @@ def findArea(area):
 
 
 def findUserarea(area):
-    sqlstr = "select area from user where id = \"%s\"" % (
-        area)
+    sqlstr = f"select area from user where id = \"{area}\""
     return DB.execution(DB.select, sqlstr)
 
 
 def hasUser(userid):
-    sqlstr = "select count(*) from user where id=\"%s\"" % (userid)
+    sqlstr = f"select count(*) from user where id=\"{userid}\"" 
     return DB.execution(DB.select, sqlstr)
 
 
@@ -84,26 +79,25 @@ def user(user_id):
             ]), "name": "msg"
         },
         {
-            "sql": "".join(["select p.*,s.name as type ,c.name as c_name from user_policy  as up  join policy as p on up.policy_id=p.id join schedule as s on up.ps_id=s.id join policy_category as pc on pc.policy_id=p.id join category as c on pc.category_id=c.id where user_id=\"", user_id, "%s\" group by up.id,p.id,c.id "]),
+            "sql": "".join(["select p.*,s.name as type ,c.name as c_name from user_policy  as up  join policy as p on up.policy_id=p.id join schedule as s on up.ps_id=s.id join policy_category as pc on pc.policy_id=p.id join category as c on pc.category_id=c.id where user_id=\"", user_id, "\" group by up.id,p.id,c.id "]),
             "name": "policy_vote"
         },
-        {"sql": "".join(["select user_id,p.*,s.type from user_proposal as up  join stand as s on up.stand_id=s.id join proposal as p on up.proposal_id=p.id group by p.id having user_id =\"", user_id, "%s\""]), "name": "proposal_vote"}]
+        {"sql": "".join(["select user_id,p.*,s.type from user_proposal as up  join stand as s on up.stand_id=s.id join proposal as p on up.proposal_id=p.id group by p.id having user_id =\"", user_id, "\""]), "name": "proposal_vote"}]
     data = DB.execution(DB.select, sqlstr)
 
-    data["data"][2]["data"] = group(data["data"][2]["data"], [
+    data["data"]["save"] = group(data["data"]["save"], [
                                     "f_name", "c_name"], "id")
-    data["data"][4]["data"] = group(data["data"][4]["data"], ["c_name"], "id")
-    # data["data"][3]["data"]=group(data["data"][3]["data"],["f_name","c_name"],"proposal_id")
+    data["data"]["policy_vote"] = group(data["data"]["policy_vote"], ["c_name"], "id")
+    
     msg = []
-    proposal_id = data["data"][3]["data"][0]["proposal_id"]
-    m_id=data["data"][3]["data"][0]["id"]
+    proposal_id = data["data"]["msg"][0]["proposal_id"]
+    m_id=data["data"]["msg"][0]["id"]
     title = ""
     item = {}
     m = []
-    abc=0
     c_name=set()
     f_name=set()
-    for i in data["data"][3]["data"]:
+    for i in data["data"]["msg"]:
         if i["proposal_id"] != proposal_id:
             if proposal_id != -1:
                 item["content"] = m
@@ -119,7 +113,6 @@ def user(user_id):
             proposal_id = i["proposal_id"]
         if(m_id!=i["id"]):
             m_id=i["id"]
-            abc+=1
             m.append({"content": i["content"], "time": i["time"],"postive":i["postive"],"id":i["id"]})
         c_name.add(i["c_name"])
         f_name.add(i["f_name"])
@@ -129,14 +122,13 @@ def user(user_id):
     item["proposal_id"]=i["proposal_id"]
     item["title"]=i["title"]
     msg.append(item)
-    data["data"][3]["data"] = msg
-    print(abc)
-    # data["data"][3]["data"]=group(data["data"][3]["data"],["f_name","c_name"],"proposal_id")
+    data["data"]["msg"] = msg
+    
+    
     return data
 
 
 def getUserIdByLine(line_id):
-    sqlstr = "select id from user where line=\"%s\"" % line_id
-
+    sqlstr = f"select id from user where line=\"{line_id}\"" 
     data = DB.execution(DB.select, sqlstr)
     return str(data["data"][0]["id"].decode())

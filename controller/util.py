@@ -1,4 +1,4 @@
-from flask import Response
+from flask import Response,jsonify,make_response
 import json
 from coder import MyEncoder
 
@@ -21,8 +21,12 @@ def checkParm(cond, content, option=None):
     return res if len(res) > 0 else result
 
 
-def ret(result):
-    return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
+def ret(result):    
+    mes="成功" if result["success"] else "失敗"
+    # return Response(json.dumps({"d":result["data"],"message":mes}, cls=MyEncoder), mimetype='application/json')    
+    return make_response(json.dumps({"D":result["data"],"message":mes,"success":result["success"]}, cls=MyEncoder))
+
+# 好像不能用
 
 def normalize_query_param(value):
     """
