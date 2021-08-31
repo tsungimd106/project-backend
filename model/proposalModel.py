@@ -1,16 +1,37 @@
 from model.db import DB
+from model.util import group
 import json
+import math
 
 
 def list(data):
     strCond = ""
-    if (isinstance(data, dict)):
-        for i in data.keys():
-            strCond += " %s =\"%s\" and" % (i, data[i])
-    sqlstr = "select p.*,s.status from proposal as p join `status`  as s on p.status_id=s.id %s limit 500" % (
-        "where " + strCond[0:len(strCond)-3] if len(strCond) > 0 else "")
+    if (isinstance(data["cond"], dict)):
+        for i in data["cond"].keys():
+            if isinstance(data["cond"][i], type(list)):
+                for j in data["cond"][i]:
+                    strCond += " `%s` =\"%s\" and " % (i, j)
+            else:
+                strCond += " %s =\"%s\" and" % (i, data["cond"][i])
+    page = int(data["page"]) if data["page"] != None else 0
+    # if (isinstance(data, dict)):
+    #     for i in data.keys():
+    #         strCond += " %s =\"%s\" and" % (i, data[i]) if i!="page" else ""
+    sqlstr = [{"sql": "select p.*,s.status ,pc.category_id,h.hashtag_name,f.name %s %s %s %s %s %s %s  " % (
+        "from proposal as p join `status`  as s on p.status_id=s.id",
+        "join (select * from proposal group by id having term =10  %s limit %d,20) as t  on p.id=t.id" % (
+            "and " + strCond[0:len(strCond)-3] if len(strCond) > 0 else "", page*20),
+        "left join proposal_category as pc on p.id=pc.propsoal_id",
+        "left join hashtag as h on pc.category_id=h.id",
+        "left join proposer as er on p.id=er.proposal_id",
+        "left join politician as po on po.id=er.politician_id",
+        "left join figure as f on po.figure_id=f.id"
+    ), "name":"list"}, {"sql": "select count(*)/20 as n from proposal as p where term=10 %s  " % ("and"+strCond[0:len(strCond)-3] if len(strCond) > 0 else ""), "name":"page"}]
+    rows = DB.execution(DB.select, sqlstr)
     
-    return (DB.execution(DB.select, sqlstr))
+    
+    result=group(rows["data"][0]["data"],["hashtag_name","name"],"id")[0]
+    return ({"list":result,"page":math.ceil(rows["data"][1]["data"][0]["n"])})
 
 
 def msg(account, mes, article_id, parent_id):
@@ -34,12 +55,29 @@ def msgList(proposal_id, user_id):
     sqlstr = [
         {"sql": "select * from message where proposal_id=\"%s\"" %
             (proposal_id), "name": "msg"},
-        {"sql": "select * from proposal where id=\"%s\"" %
-            (proposal_id), "name": "detail"},
+        {"sql": " select p.id,p.title,p.pdfUrl ,s.status,f.name ,h.hashtag_name from proposal as p %s  %s %s  %s  %s where   p.id=\"%s\" " %
+            ("left join proposer as er on er.proposal_id=p.id",
+             "left join figure as f on er.politician_id=f.id",
+             "left join status as s on p.status_id=s.id",
+             "left join proposal_category as pc on p.id=pc.propsoal_id",
+             "left join hashtag as h on pc.category_id=h.id",
+                proposal_id),
+         "name": "detail"},
         {"sql": "select * from favorite where user_id=\"%s\" and proposal_id=\"%s\"" %
-         (proposal_id, user_id), "name": "heart"},
+         (proposal_id, user_id), "name": "heart"}, {"sql": "select * from rule", "name": "rule"}
     ]
-    return DB.execution(DB.select, sqlstr)
+    rows = DB.execution(DB.select, sqlstr)
+    result = {}
+    category = set()
+    proposer = set()
+    # print(rows)
+    for i in rows["data"][1]["data"]:
+        category.add(i["hashtag_name"])
+        proposer.add(i["name"])
+    rows["data"][1]["data"][0]["name"] = proposer
+    rows["data"][1]["data"][0]["category"] = category
+    rows["data"][1]["data"] = rows["data"][1]["data"][0]
+    return rows
 
 
 def msgListByUser(user_id):
@@ -56,7 +94,7 @@ def getSave(user_id):
 def save(user_id, proposal_id):
     sqlstr = ("insert into favorite( user_id,proposal_id) values(\"%s\",\"%s\");" %
               (user_id, proposal_id))
-    
+
     return DB.execution(DB.create, sqlstr)
 
 
@@ -82,13 +120,13 @@ def change(data, id):
             strCond += " %s = \"%s\" ," % (i, data[i])
     sqlstr = "update proposal set %s where id=\"%s\"" % (
         strCond[0:len(strCond)-1], id)
-    
+
     return DB.execution(DB.update, sqlstr)
 
 
 def getCond():
     sqlstr = [
         {"sql":  "select term as name from proposal group by term;", "name": "屆別"},
-        {"sql": "select s.status as name from proposal as p join status as s on p.status_id=s.id group by status_id;", "name": "狀態"}
+        {"sql": "select s.id,s.status as name from proposal as p join status as s on p.status_id=s.id group by status_id;", "name": "狀態"}
     ]
     return DB.execution(DB.select, sqlstr)

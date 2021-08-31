@@ -15,5 +15,7 @@ class MyEncoder(json.JSONEncoder):
         elif isinstance(obj, decimal.Decimal):  # 返回内容如果包含Decimal类型的数据
             return float(obj)
         elif isinstance(obj,bytes):
-            return obj.decode(encoding='utf-8')        
+            return obj.decode(encoding='utf-8')     
+        elif isinstance(obj, set):
+            return list(obj)   
         return json.JSONEncoder.default(self, obj)
