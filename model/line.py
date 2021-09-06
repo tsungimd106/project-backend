@@ -63,5 +63,20 @@ class lineModule:
                                     QuickReplyButton(action=MessageAction(
                                            label='淡水區', text='新北市第一選舉區'))
                                    ]))
+        elif(msg == "選舉專區"):
+            return TextSendMessage(text="點選所想看的內容",
+                                    
+                                   quick_reply=QuickReply(items=[
+                                       QuickReplyButton(action=MessageAction(
+                                           label='投票這六不', text='投票這六不')),
+                                    QuickReplyButton(action=MessageAction(
+                                           label='投票三口訣', text='投票三口訣')),   
+                                    QuickReplyButton(action=MessageAction(
+                                           label='投票三寶', text='投票三寶')),    
+                                    QuickReplyButton(action=MessageAction(
+                                           label='投票這五步', text='投票這五步'))
+                                    
+                                   ]))
+        
         else:
             return TextSendMessage(text="")
