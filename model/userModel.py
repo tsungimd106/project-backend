@@ -32,9 +32,9 @@ def changeProfile(data, account):
     return DB.execution(DB.update, sqlstr)
 
 
-def findArea(area):
-    sqlstr = "select * from area "
-    return DB.execution(DB.select, sqlstr)
+# def findArea(area):
+#     sqlstr = "select * from area "
+#     return DB.execution(DB.select, sqlstr)
 
 
 def findUserarea(area):
@@ -132,3 +132,6 @@ def getUserIdByLine(line_id):
     sqlstr = f"select id from user where line=\"{line_id}\"" 
     data = DB.execution(DB.select, sqlstr)
     return str(data["data"][0]["id"].decode())
+def getUserByLine(line_id):
+    sqlstr=f"select * from user where line=\"{line_id}\""
+    return DB.execution(DB.select,sqlstr)

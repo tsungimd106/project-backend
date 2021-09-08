@@ -1,7 +1,8 @@
 # app.py
 import os
-from flask import Flask, Response, request, abort
+from flask import Flask, Response, request, abort,redirect
 from coder import MyEncoder
+import requests
 
 import json
 import sys
@@ -18,6 +19,8 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage,TextSendMessage
 )
+from model import userModel
+from controller.util import ret
 
 from flask_cors import CORS
 from flask_restplus import Resource, Api
@@ -45,9 +48,49 @@ CORS(app)
  
 
 
-@app.route('/get', methods=["GET","OPTIONS"])
+@app.route('/lineLogin', methods=["GET","OPTIONS"])
 def home():
-    return 'good from backend'
+    userLineID=""
+    args=request.args.get("code")
+    
+    header = {'Content-Type': 'application/x-www-form-urlencoded'}
+    r=requests.post("https://api.line.me/oauth2/v2.1/token",headers=header,data={
+        "grant_type":"authorization_code","code":str(args),
+        "redirect_uri":"https://b7a4-115-43-165-47.ngrok.io/lineLogin",
+        "client_id":"1656404446",
+        "client_secret":"eb6bb1fe08f647ecf52b1e0978543a4d"
+    })
+    rText=r.text
+
+    if("error" not in rText):
+        # print(r.text)        
+        j=json.loads(r.text)
+        token=j["access_token"]        
+        secondR=requests.get("https://api.line.me/v2/profile",headers={"Authorization": f"Bearer {token}"})
+        secondText=secondR.text
+        if("error" not in secondText):
+            secondJ=json.loads(secondText)
+            # print(secondJ["userId"])
+            userLineID=secondJ["userId"]   
+            print(userLineID)
+            data=userModel.getUserByLine(userLineID)
+            urlCond=f"?lineId={userLineID}"
+            for i in data["data"]:
+                urlCond+=f'&user_id={i["id"].decode()}&identity={i["identity"]}'
+                
+            return redirect(f"https://taipei.app/#/redirect{urlCond}")
+            
+        else:  
+            print(secondText)  
+            return ret({"success":False})
+    else:
+        print(rText)
+        return ret({"success":False})
+
+@app.route("/line")
+def line():
+    args=request.args.get("access_token")
+    return "line"
     
 #  ----------------------- 
 @app.route("/callback", methods=['POST'])
@@ -56,7 +99,7 @@ def callback():
     signature = request.headers['X-Line-Signature']
     # get request body as text
     body = request.get_data(as_text=True)
-    
+    return 'OK'
     app.logger.info("Request body: " + body)
    # handle webhook body
     try:
