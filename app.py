@@ -56,7 +56,7 @@ def home():
     header = {'Content-Type': 'application/x-www-form-urlencoded'}
     r=requests.post("https://api.line.me/oauth2/v2.1/token",headers=header,data={
         "grant_type":"authorization_code","code":str(args),
-        "redirect_uri":"https://b7a4-115-43-165-47.ngrok.io/lineLogin",
+        "redirect_uri":"https://test1022ntubimd.herokuapp.com/lineLogin",
         "client_id":"1656404446",
         "client_secret":"eb6bb1fe08f647ecf52b1e0978543a4d"
     })
