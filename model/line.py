@@ -13,7 +13,21 @@ class lineModule:
         print(event)
         msg = event.message.text
         if(msg == "我要查詢政治人物"):
-            return TextSendMessage(text="輸入政治人物名稱")
+            return TextSendMessage(text="點選想查詢人物城市所在",
+                                   quick_reply=QuickReply(items=[
+                                       QuickReplyButton(action=MessageAction(
+                                           label='台北市', text='台北市')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='新北市', text='新北市')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='桃園市', text='桃園市')),
+                                       QuickReplyButton(action=MessageAction(
+                                        label='台中市', text='台中市')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='台南市', text='台南市')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='高雄市', text='高雄市'))
+                                   ]))
         elif(msg == "蔣萬安"):
             return TextSendMessage(text=msg,
                                    quick_reply=QuickReply(items=[
@@ -63,6 +77,7 @@ class lineModule:
                                        QuickReplyButton(action=MessageAction(
                                            label='淡水區', text='新北市第一選舉區'))
                                    ]))
+        
         elif(msg == "選舉專區"):
             return TextSendMessage(text="點選所想看的內容",
                                    quick_reply=QuickReply(items=[
@@ -149,6 +164,7 @@ class lineModule:
 
 
                                    ]))
+        
 
         else:
             return TextSendMessage(text="")
