@@ -77,7 +77,7 @@ def getDetail(data):
             "name":"attend"
 
         }, {
-            "sql": "".join(["SELECT * FROM table_policy where  p_id =\"", data["id"], "\""]), "name":"table_policy"
+            "sql": "".join(["SELECT * FROM table_policy where  p_id =\"", data["id"], "\""," order by quota desc ,total desc"]), "name":"table_policy"
         },
         {
             "sql": "".join(["SELECT * FROM table_policyDetail where  id =\"", data["id"], "\""]), "name":"table_policyDetail"

@@ -10,9 +10,18 @@ def list(data):
         for i in data["cond"].keys():
             if isinstance(data["cond"][i], type(list)):
                 for j in data["cond"][i]:
-                    strCond += " `%s` =\"%s\" and " % (i, j)
+
+                    if j == "title":
+                        strCond += " '"+j+"` like\"%"+j+"%\" and"
+                    else:
+                        strCond += " `%s` =\"%s\" and" % (i, j)
             else:
-                strCond += " %s =\"%s\" and" % (i, data["cond"][i])
+
+                if i == "title":
+                    strCond += " "+i+" like \"%"+data["cond"][i]+"%\" and"
+                else:
+                    strCond += " %s =\"%s\" and" % (i, data["cond"][i])
+                # strCond += " %s =\"%s\" and" % (i, data["cond"][i])
     page = int(data["page"]) if data["page"] != None else 0
     # if (isinstance(data, dict)):
     #     for i in data.keys():
@@ -136,3 +145,7 @@ def getCond():
         {"sql": "select s.id,s.status as name from proposal as p join status as s on p.status_id=s.id group by status_id;", "name": "狀態"}
     ]
     return DB.execution(DB.select, sqlstr)
+
+
+def great():
+    sqlstr = f"insert into great() values()"
