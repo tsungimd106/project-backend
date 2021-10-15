@@ -45,39 +45,7 @@ class lineModule:
                                            uri='https://taipei.app/redirect/%s/user' % webUserid
                                        ))
                                    ]))
-        elif(msg == "我要查詢選區"):
-            return TextSendMessage(text="點選所在城市",
-                                   quick_reply=QuickReply(items=[
-                                       QuickReplyButton(action=MessageAction(
-                                           label='台北市', text='台北市')),
-                                       QuickReplyButton(action=MessageAction(
-                                           label='新北市', text='新北市')),
-                                       QuickReplyButton(action=MessageAction(
-                                           label='桃園市', text='新北市')),
-                                       QuickReplyButton(action=MessageAction(
-                                        label='台中市', text='新北市')),
-                                       QuickReplyButton(action=MessageAction(
-                                           label='台南市', text='新北市')),
-                                       QuickReplyButton(action=MessageAction(
-                                           label='高雄市', text='新北市'))
-                                   ]))
-        elif(msg == "新北市"):
-            return TextSendMessage(text="點選所在區域",
-                                   quick_reply=QuickReply(items=[
-                                       QuickReplyButton(action=MessageAction(
-                                           label='土城區', text='新北市第十選舉區')),
-                                       QuickReplyButton(action=MessageAction(
-                                           label='三峽區', text='新北市第十選舉區')),
-                                       QuickReplyButton(action=MessageAction(
-                                           label='金山區', text='新北市第十選舉區')),
-                                       QuickReplyButton(action=MessageAction(
-                                        label='萬里區', text='新北市第十選舉區')),
-                                       QuickReplyButton(action=MessageAction(
-                                           label='石門區', text='新北市第一選舉區')),
-                                       QuickReplyButton(action=MessageAction(
-                                           label='淡水區', text='新北市第一選舉區'))
-                                   ]))
-        
+
         elif(msg == "選舉專區"):
             return TextSendMessage(text="點選所想看的內容",
                                    quick_reply=QuickReply(items=[
@@ -92,6 +60,36 @@ class lineModule:
                                        QuickReplyButton(action=URIAction(
                                            label='點我看更多',
                                            uri='https://taipei.app/#/election'
+                                       ))
+
+                                   ]))
+
+        elif(msg == "提案專區"):
+            return TextSendMessage(text="點選所想看的類別",
+                                   quick_reply=QuickReply(items=[
+                                       QuickReplyButton(action=MessageAction(
+                                           label='財政金融', text='財政金融')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='教育', text='教育')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='內政', text='內政')),
+                                       QuickReplyButton(action=MessageAction(
+                                        label='司法及法制', text='司法及法制')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='科技', text='科技')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='觀光', text='觀光')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='國防', text='國防')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='性別平等', text='性別平等')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='食品安全', text='投票這五步')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='長期照顧', text='投票這五步')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='司法及法制', text='投票這五步'
+
                                        ))
 
                                    ]))
@@ -164,7 +162,6 @@ class lineModule:
 
 
                                    ]))
-        
 
         else:
             return TextSendMessage(text="")
