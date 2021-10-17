@@ -1,5 +1,6 @@
 from flask import Blueprint, request, Response
-from model import proposalModel
+import model.proposalModel
+#from model import proposalModel
 import json
 from coder import MyEncoder
 from .util import (ret, checkParm, normalize_query, normalize_query_param)
@@ -30,11 +31,11 @@ def find():
 @proposalAPI.route("/msg", methods=["POST"])
 def msg():
     content = request.json
-    cond = ["user_id", "content", "article_id", "parent_id"]
+    cond = ["user_id", "content", "article_id", "parent_id","postive"]
     t = checkParm(cond, content)
     if(isinstance(t, dict)):
         data = proposalModel.msg(
-            account=content[cond[0]], mes=content[cond[1]], article_id=content[cond[2]], parent_id=content[cond[3]])
+            account=content[cond[0]], mes=content[cond[1]], article_id=content[cond[2]], parent_id=content[cond[3]],postive=content[cond[4]])
     else:
         data = {"success": False, "mes": t}
 
