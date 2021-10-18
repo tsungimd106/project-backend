@@ -11,7 +11,7 @@ proposalAPI = Blueprint("proposal", __name__, url_prefix="/proposal")
 
 @proposalAPI.route("", methods=["GET"])
 def find():
-    cond = ["id", "term",  "status_id", ]
+    cond = ["id", "term",  "status_id", "title"]
     content = request.args
     after = normalize_query(content)   
     condData={}
@@ -103,3 +103,4 @@ def rule():
 @proposalAPI.route("/cond", methods=["GET"])
 def cond():
     return ret(proposalModel.getCond())
+
