@@ -42,12 +42,11 @@ class DB():
                 # 執行傳入的sql 指令
                 cursor = connection.cursor(dictionary=True)
                 if(isinstance(sqlstr, list)):
-                    result = []
+                    result = {}
                     for sqlstrItem in sqlstr:                        
                         cursor.execute(sqlstrItem["sql"])
                         rows = cursor.fetchall()
-                        result.append(
-                            {"name": sqlstrItem["name"], "data": rows})
+                        result[sqlstrItem["name"]]=rows                        
                     return {"success": True, "data": result}
                 else:
                     if(type == DB.create or type == DB.update):

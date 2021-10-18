@@ -2,6 +2,7 @@ from model.db import DB
 import json
 from model.util import group
 
+
 def list(data):
     strCond = ""
     if (isinstance(data, dict)):
@@ -72,14 +73,25 @@ def getDetail(data):
             "sql": "select p.id,p.content,c.name ,c.id as c_id from policy as p join policy_category as pc on pc.policy_id=p.id join category as c on pc.category_id=c.id where politician_id=%s order by p.id" % data["id"],
             "name":"policy"
         }, {
-            "sql": "SELECT a.* FROM db.attendance as a join politician as p on a.politician_id=p.id join politician as f on p.figure_id=f.id where f.id in ( 	 select figure_id from politician where id=\"%s\")" % data["id"],
+            "sql": "SELECT a.* FROM db.attendance as a join politician as p on a.politician_id=p.id join figure as f on p.figure_id=f.id where f.id in (select figure_id from politician where id=\"%s\")" % data["id"],
             "name":"attend"
 
+        }, {
+            "sql": "".join(["SELECT * FROM table_policy where  p_id =\"", data["id"], "\""," order by quota desc ,total desc"]), "name":"table_policy"
+        },
+        {
+            "sql": "".join(["SELECT * FROM table_policyDetail where  id =\"", data["id"], "\""]), "name":"table_policyDetail"
+        },  {
+            "sql": "".join(["SELECT * FROM count_score where  id =\"", data["id"], "\""]), "name":"count_score"
+        }, {
+            "sql": "".join(["select *,count(*) as quota from proposer where politician_id=", data["id"], " group by politician_id "]), "name":"proposal_quota"
+        }, {
+            "sql": "".join(["select * from proposer as er join proposal as p on er.proposal_id=p.id where er.politician_id=\"", data["id"], "\""]), "name":"proposal"
         }
     ]
 
     rows = DB.execution(DB.select, sqlstr)
-    rows["data"][1]["data"]=group(rows["data"][1]["data"],["name"],"id")
+    rows["data"]["policy"] = group(rows["data"]["policy"], ["name"], "id")
     return rows
 
 

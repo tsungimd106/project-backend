@@ -112,7 +112,7 @@ def edit():
 def changeProfile():
     content = request.json
     account = content["account"]
-    cond = ["gender", "areaid"]
+    cond = ["gender", "area_id"]
     data = {}
     for i in cond:
         if(i in content.keys()):
