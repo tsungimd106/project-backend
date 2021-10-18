@@ -5,6 +5,7 @@ import math
 from snownlp import SnowNLP
 from snownlp import sentiment
 
+
 def list(data):
     strCond = ""
     if (isinstance(data["cond"], dict)):
@@ -29,43 +30,21 @@ def list(data):
         "left join figure as f on po.figure_id=f.id"
     ), "name":"list"}, {"sql": "select count(*)/20 as n from proposal as p where term=10 %s  " % ("and"+strCond[0:len(strCond)-3] if len(strCond) > 0 else ""), "name":"page"}]
     rows = DB.execution(DB.select, sqlstr)
-    
-    
-    result=group(rows["data"][0]["data"],["hashtag_name","name"],"id")[0]
-    return ({"list":result,"page":math.ceil(rows["data"][1]["data"][0]["n"])})
 
-#加正負向分析
+    result = group(rows["data"][0]["data"], ["hashtag_name", "name"], "id")[0]
+    return ({"list": result, "page": math.ceil(rows["data"][1]["data"][0]["n"])})
+
+# 加正負向分析
+
 def msg(account, mes, article_id, parent_id):
-    sqlstr = "insert into message(user_id,content,proposal_id,parent_id) values(\"%s\",\"%s\",\"%s\",\"%s\");" % (
-        account, mes, article_id, parent_id)
-    def findMessage():
-        sqlstr = "select id,content from message"
-    return DB.execution(DB.select, sqlstr)
 
-    def returnMessage(postive,iid):
-        sqlstr = "insert into message set postive = %s where id=\"%s\"" % (
-            postive,iid)
-        print(sqlstr)
-        return DB.execution(DB.create, sqlstr)
+    a =   listRes = list(mes.split(" "))()
+    s = SnowNLP(a)
 
-    datas = findMessage()
+    sqlstr = "insert into message(user_id,content,proposal_id,parent_id,postive) values(\"%s\",\"%s\",\"%s\",\"%s\");" % (
+        account, mes, article_id, parent_id, s.sentiments)
 
-    def stringToList(string):
-        listRes = list(string.split(" "))
-        return listRes
-
-    for i in datas["data"]:
-        a = str(i["content"], encoding='utf-8')
-        stringToList(a)
-        s=SnowNLP(a)
-    if s.sentiments <=0.4:
-        #f1.write(a+'\t'+str(s.sentiments)+'\n')
-        returnMessage(s.sentiments,i["id"])
-    else:
-        #f2.write(a + '\t' + str(s.sentiments) + '\n')
-        returnMessage(s.sentiments,i["id"])
-    
-    return DB.execution(DB.create, sqlstr)    
+    return DB.execution(DB.create, sqlstr)
 
 
 def vote(userid, sp_id, proposal_id):
