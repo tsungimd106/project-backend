@@ -84,13 +84,59 @@ class lineModule:
                                        QuickReplyButton(action=MessageAction(
                                            label='性別平等', text='性別平等')),
                                        QuickReplyButton(action=MessageAction(
-                                           label='食品安全', text='投票這五步')),
+                                           label='食品安全', text='食品安全')),
                                        QuickReplyButton(action=MessageAction(
-                                           label='長期照顧', text='投票這五步')),
+                                           label='長期照顧', text='長期照顧')),
                                        QuickReplyButton(action=MessageAction(
-                                           label='司法及法制', text='投票這五步'
-
-                                       ))
+                                           label='衛生社福', text='衛生社福')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='農業', text='農業')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='交通', text='交通')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='海洋', text='海洋')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='動物保育', text='動物保育')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='原住民', text='原住民')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='外交', text='外交')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='兩岸關係', text='兩岸關係')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='高齡化', text='高齡化')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='幼托育兒', text='幼托育兒')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='年改', text='年改')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='基礎建設', text='基礎建設')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='拒毒品', text='拒毒品')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='客家', text='客家')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='治安', text='治安')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='都市發展', text='都市發展')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='補助', text='補助')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='都市美化', text='都市美化')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='汽機車', text='汽機車')),
+                                        QuickReplyButton(action=MessageAction(
+                                           label='環保', text='環保')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='體育賽事', text='體育賽事')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='勞工就業', text='勞工就業')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='青年', text='青年')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='文創', text='文創')),
+                                       QuickReplyButton(action=MessageAction(
+                                           label='新住民', text='新住民'))
 
                                    ]))
         elif(msg == "投票這六不"):
