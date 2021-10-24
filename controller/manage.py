@@ -10,44 +10,46 @@ from werkzeug.utils import secure_filename
 manageAPI = Blueprint("manage", __name__, url_prefix="/manage")
 
 
-@manageAPI.route("/politician", methods=["PATCH"])
-def changeProfile():
-    content = request.json
-    account = content["id"]
-    cond = ["term", "sex", "partyid", "areaid", "positionid"]
-    data = {}
-    for i in cond:
-        if(i in content.keys()):
-            data[i] = content[i]
-    data = politicianModel.changePolitician(data, id)
-    result = {"success": False, "message": "修改異常", "data": data}
-    if(data["success"]):
-        result["success"] = True
-        result["message"] = "修改成功"
-    return ret(result)
+# @manageAPI.route("/politician", methods=["PATCH"])
+# def changeProfile():
+#     content = request.json
+#     account = content["id"]
+#     cond = ["term", "sex", "partyid", "areaid", "positionid"]
+#     data = {}
+#     for i in cond:
+#         if(i in content.keys()):
+#             data[i] = content[i]
+#     data = politicianModel.changePolitician(data, id)
+#     result = {"success": False, "message": "修改異常", "data": data}
+#     if(data["success"]):
+#         result["success"] = True
+#         result["message"] = "修改成功"
+#     return ret(result)
 
 
-@manageAPI.route("/proposal", methods=["PATCH"])
-def changeProposal():
-    content = request.json
-    id = content["id"]
-    cond = ["term", "sessionPeriod", "billNo", "billName",
-            "billOrg", "ststusid", "billProposer", "billCosignator"]
-    data = {}
-    for i in cond:
-        if(i in content.keys()):
-            data[i] = content[i]
-    data = proposalModel.change(data, id)
-    result = {"success": False, "message": "修改異常", "data": data}
-    if(data["success"]):
-        result["success"] = True
-        result["message"] = "修改成功"
-        return ret(result)
+# @manageAPI.route("/proposal", methods=["PATCH"])
+# def changeProposal():
+#     content = request.json
+#     id = content["id"]
+#     cond = ["term", "sessionPeriod", "billNo", "billName",
+#             "billOrg", "ststusid", "billProposer", "billCosignator"]
+#     data = {}
+#     for i in cond:
+#         if(i in content.keys()):
+#             data[i] = content[i]
+#     data = proposalModel.change(data, id)
+#     result = {"success": False, "message": "修改異常", "data": data}
+#     if(data["success"]):
+#         result["success"] = True
+#         result["message"] = "修改成功"
+#         return ret(result)
 
 
 @manageAPI.route("/identity", methods=["GET"])
 def identity():
     return ret(manageModel.identity())
+
+# 未完成
 
 
 @manageAPI.route("/identity", methods=["POST"])
@@ -63,11 +65,13 @@ def setIdentity():
 @manageAPI.route("/user", methods=["GET"])
 def identityUser():
     return ret(manageModel.getUser())
-    
+
 
 @manageAPI.route("/report", methods=["GET"])
 def getReport():
     return ret(manageModel.report())
+
+# 未完成
 
 
 @manageAPI.route("/report", methods=["POST"])

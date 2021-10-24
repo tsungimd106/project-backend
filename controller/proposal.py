@@ -1,6 +1,6 @@
 from flask import Blueprint, request, Response
 import model.proposalModel
-#from model import proposalModel
+from model import proposalModel
 import json
 from coder import MyEncoder
 from .util import (ret, checkParm, normalize_query, normalize_query_param)
