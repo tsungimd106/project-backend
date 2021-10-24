@@ -5,6 +5,7 @@ import math
 from snownlp import SnowNLP
 from snownlp import sentiment
 
+
 def list(data):
     strCond = ""
     if (isinstance(data["cond"], dict)):
@@ -44,38 +45,19 @@ def list(data):
     result = group(rows["data"]["list"], ["hashtag_name", "name"], "id")
     return ({"data": {"list": result, "page": math.ceil(rows["data"]["page"][0]["n"]), }, "success": True})
 
-#加正負向分析
+
+
+# 加正負向分析
+
 def msg(account, mes, article_id, parent_id):
-    sqlstr = "insert into message(user_id,content,proposal_id,parent_id) values(\"%s\",\"%s\",\"%s\",\"%s\");" % (
-        account, mes, article_id, parent_id)
-    def findMessage():
-        sqlstr = "select id,content from message"
-    return DB.execution(DB.select, sqlstr)
 
-    def returnMessage(postive,iid):
-        sqlstr = "insert into message set postive = %s where id=\"%s\"" % (
-            postive,iid)
-        print(sqlstr)
-        return DB.execution(DB.create, sqlstr)
+    a =   listRes = list(mes.split(" "))()
+    s = SnowNLP(a)
 
-    datas = findMessage()
+    sqlstr = "insert into message(user_id,content,proposal_id,parent_id,postive) values(\"%s\",\"%s\",\"%s\",\"%s\");" % (
+        account, mes, article_id, parent_id, s.sentiments)
 
-    def stringToList(string):
-        listRes = list(string.split(" "))
-        return listRes
-
-    for i in datas["data"]:
-        a = str(i["content"], encoding='utf-8')
-        stringToList(a)
-        s=SnowNLP(a)
-    if s.sentiments <=0.4:
-        #f1.write(a+'\t'+str(s.sentiments)+'\n')
-        returnMessage(s.sentiments,i["id"])
-    else:
-        #f2.write(a + '\t' + str(s.sentiments) + '\n')
-        returnMessage(s.sentiments,i["id"])
-    
-    return DB.execution(DB.create, sqlstr)    
+    return DB.execution(DB.create, sqlstr)
 
 
 def vote(userid, sp_id, proposal_id):
