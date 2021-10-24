@@ -13,7 +13,6 @@ def findPolicy():
 
 # 從資料庫裡抓取類別
 
-
 def findCategory():
     sqlstr = "select id,name from category"
     return DB.execution(DB.select, sqlstr)

@@ -45,8 +45,7 @@ def list(data):
     result = group(rows["data"]["list"], ["hashtag_name", "name"], "id")
     return ({"data": {"list": result, "page": math.ceil(rows["data"]["page"][0]["n"]), }, "success": True})
 
-    result = group(rows["data"][0]["data"], ["hashtag_name", "name"], "id")[0]
-    return ({"list": result, "page": math.ceil(rows["data"][1]["data"][0]["n"])})
+
 
 # 加正負向分析
 
