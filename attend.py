@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 import requests
-#from model.db import DB
+from model.db import DB
 import statistics
 import numpy as np
 from bs4 import BeautifulSoup
