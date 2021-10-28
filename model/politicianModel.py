@@ -44,9 +44,9 @@ def getList(data):
     result = []
     # print(strCond)
     sqlstr = "".join([
-        " SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.te l",
+        " SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel ",
         " FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id ",
-        f" where {strCond if len(strCond) > 0 else ''} ",
+        f"  {' where '+strCond if len(strCond) > 0 else ''} ",
         " order by e.area_id,p.term,f.name"
     ])
 
@@ -66,8 +66,8 @@ def getDetail(data):
             "sql":
 
             "SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel,pa.name as p_name,e.name as e_n,e.remark"
-            + "FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id join party as pa on p.party_id=pa.id"
-            + f"where p.id=\" {data['id']} \" order by e.area_id,p.term,f.name",              "name": "detail"
+            + " FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id join party as pa on p.party_id=pa.id"
+            + f" where p.id=\" {data['id']} \" order by e.area_id,p.term,f.name",              "name": "detail"
         },
         {
             "sql": f"select p.id,p.content,c.name ,c.id as c_id from policy as p join policy_category as pc on pc.policy_id=p.id join category as c on pc.category_id=c.id where politician_id={data['id']} order by p.id",
