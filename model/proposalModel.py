@@ -5,15 +5,25 @@ import math
 from snownlp import SnowNLP
 from snownlp import sentiment
 
+
 def list(data):
     strCond = ""
     if (isinstance(data["cond"], dict)):
         for i in data["cond"].keys():
             if isinstance(data["cond"][i], type(list)):
                 for j in data["cond"][i]:
-                    strCond += " `%s` =\"%s\" and " % (i, j)
+
+                    if j == "title":
+                        strCond += " '"+j+"` like\"%"+j+"%\" and"
+                    else:
+                        strCond += " `%s` =\"%s\" and" % (i, j)
             else:
-                strCond += " %s =\"%s\" and" % (i, data["cond"][i])
+
+                if i == "title":
+                    strCond += " "+i+" like \"%"+data["cond"][i]+"%\" and"
+                else:
+                    strCond += " %s =\"%s\" and" % (i, data["cond"][i])
+                # strCond += " %s =\"%s\" and" % (i, data["cond"][i])
     page = int(data["page"]) if data["page"] != None else 0
     # if (isinstance(data, dict)):
     #     for i in data.keys():
@@ -27,45 +37,27 @@ def list(data):
         "left join proposer as er on p.id=er.proposal_id",
         "left join politician as po on po.id=er.politician_id",
         "left join figure as f on po.figure_id=f.id"
-    ), "name":"list"}, {"sql": "select count(*)/20 as n from proposal as p where term=10 %s  " % ("and"+strCond[0:len(strCond)-3] if len(strCond) > 0 else ""), "name":"page"}]
+    ), "name":"list"},
+        {"sql": "select count(*)/20 as n from proposal as p where term=10 %s  " % ("and"+strCond[0:len(strCond)-3] if len(strCond) > 0 else ""),
+         "name":"page"}]
     rows = DB.execution(DB.select, sqlstr)
-    
-    
-    result=group(rows["data"][0]["data"],["hashtag_name","name"],"id")[0]
-    return ({"list":result,"page":math.ceil(rows["data"][1]["data"][0]["n"])})
 
-#加正負向分析
+    result = group(rows["data"]["list"], ["hashtag_name", "name"], "id")
+    return ({"data": {"list": result, "page": math.ceil(rows["data"]["page"][0]["n"]), }, "success": True})
+
+
+
+# 加正負向分析
+
 def msg(account, mes, article_id, parent_id):
-    sqlstr = "insert into message(user_id,content,proposal_id,parent_id) values(\"%s\",\"%s\",\"%s\",\"%s\");" % (
-        account, mes, article_id, parent_id)
-    def findMessage():
-        sqlstr = "select id,content from message"
-    return DB.execution(DB.select, sqlstr)
 
-    def returnMessage(postive,iid):
-        sqlstr = "insert into message set postive = %s where id=\"%s\"" % (
-            postive,iid)
-        print(sqlstr)
-        return DB.execution(DB.create, sqlstr)
+    a =   listRes = list(mes.split(" "))()
+    s = SnowNLP(a)
 
-    datas = findMessage()
+    sqlstr = "insert into message(user_id,content,proposal_id,parent_id,postive) values(\"%s\",\"%s\",\"%s\",\"%s\");" % (
+        account, mes, article_id, parent_id, s.sentiments)
 
-    def stringToList(string):
-        listRes = list(string.split(" "))
-        return listRes
-
-    for i in datas["data"]:
-        a = str(i["content"], encoding='utf-8')
-        stringToList(a)
-        s=SnowNLP(a)
-    if s.sentiments <=0.4:
-        #f1.write(a+'\t'+str(s.sentiments)+'\n')
-        returnMessage(s.sentiments,i["id"])
-    else:
-        #f2.write(a + '\t' + str(s.sentiments) + '\n')
-        returnMessage(s.sentiments,i["id"])
-    
-    return DB.execution(DB.create, sqlstr)    
+    return DB.execution(DB.create, sqlstr)
 
 
 def vote(userid, sp_id, proposal_id):
@@ -83,12 +75,13 @@ def msgList(proposal_id, user_id):
     sqlstr = [
         {"sql": "select * from message where proposal_id=\"%s\"" %
             (proposal_id), "name": "msg"},
-        {"sql": " select p.id,p.title,p.pdfUrl ,s.status,f.name ,h.hashtag_name from proposal as p %s  %s %s  %s  %s where   p.id=\"%s\" " %
-            ("left join proposer as er on er.proposal_id=p.id",
-             "left join figure as f on er.politician_id=f.id",
-             "left join status as s on p.status_id=s.id",
-             "left join proposal_category as pc on p.id=pc.propsoal_id",
-             "left join hashtag as h on pc.category_id=h.id",
+        {"sql": " select p.id,p.title,p.pdfUrl ,s.status,f.name ,h.hashtag_name from proposal as p %s  %s %s  %s  %s %s where   p.id=\"%s\" " %
+            (" left join proposer as er on er.proposal_id=p.id",
+             " left join politician as polit on polit.id=er.politician_id",
+             " left join figure as f on polit.figure_id=f.id ",
+             " left join status as s on p.status_id=s.id",
+             " left join proposal_category as pc on p.id=pc.propsoal_id",
+             " left join hashtag as h on pc.category_id=h.id",
                 proposal_id),
          "name": "detail"},
         {"sql": "select * from favorite where user_id=\"%s\" and proposal_id=\"%s\"" %
@@ -96,15 +89,19 @@ def msgList(proposal_id, user_id):
     ]
     rows = DB.execution(DB.select, sqlstr)
     result = {}
-    category = set()
-    proposer = set()
-    # print(rows)
-    for i in rows["data"][1]["data"]:
-        category.add(i["hashtag_name"])
-        proposer.add(i["name"])
-    rows["data"][1]["data"][0]["name"] = proposer
-    rows["data"][1]["data"][0]["category"] = category
-    rows["data"][1]["data"] = rows["data"][1]["data"][0]
+    print(rows["data"]["detail"])
+    rows["data"]["detail"] = group(rows["data"]["detail"], [
+                                   "name", "hashtag_name"], "id")[0]
+    print(rows["data"]["detail"])
+    # category = set()
+    # proposer = set()
+    # # print(rows)
+    # for i in rows["data"]["detail"]:
+    #     category.add(i["hashtag_name"])
+    #     proposer.add(i["name"])
+    # rows["data"]["detail"][0]["name"] = proposer
+    # rows["data"]["detail"][0]["category"] = category
+    # rows["data"]["detail"] = rows["data"]["detail"][0]
     return rows
 
 
@@ -158,3 +155,7 @@ def getCond():
         {"sql": "select s.id,s.status as name from proposal as p join status as s on p.status_id=s.id group by status_id;", "name": "狀態"}
     ]
     return DB.execution(DB.select, sqlstr)
+
+
+def great():
+    sqlstr = f"insert into great() values()"
