@@ -11,7 +11,7 @@ def findPolitican():
 
 def cut_sentences(content):
 
-    # 结束符号，包含中文和英文的
+    # 结束符號，包含中文和英文的
     end_flag = ['?', '!', '？', '！', '。', '…',
                 '●', '．', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'
                 '1','2','3','4','5','6','7','8','9','10','【','】']
@@ -23,7 +23,7 @@ def cut_sentences(content):
         # 拼接字符
         tmp_char += char
 
-        # 判斷是否已经到了最後一位
+        # 判斷是否已經到了最後一位
         if (idx + 1) == content_len:
             sentences.append(tmp_char)
             break
