@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from sentence_transformers.util import cos_sim, semantic_search
-from text2vec import SBert
+#from text2vec import SBert
+#from sentence_transformers.util import semantic_search
+#from sentence_transformers import SentenceTransformer
+from configparser import ParsingError
 from re import A, M
 from model.db import DB
 import xiangshi as xs
@@ -10,32 +12,29 @@ import csv
 import sys
 sys.path.append('..')
 
+
 # 提案分類
 # 從資料庫裡抓取提案標題
-
-
 def findProposal():
-    sqlstr = "select id,title from proposal"
+    sqlstr = "select `id`,title from proposal"
     return DB.execution(DB.select, sqlstr)
 
+
 # 從資料庫裡抓取類別
-
-
 def findCategory():
-    sqlstr = "select id,name from category"
+    sqlstr = "select `id`,name from category"
     return DB.execution(DB.select, sqlstr)
 
 
 # 將所屬類別存回資料庫
-def returnCategory(proposal_id, category_id):
+def returnproCategory(proposal_id, category_id):
     sqlstr = "insert into proposal_category (proposal_id, category_id) VALUES (%s, %s)" % (
         proposal_id, category_id)
     return DB.execution(DB.create, sqlstr)
 
 # 若第一階段餘弦相似度沒有篩選成功，實施第二階段餘弦相似度計算
 
-
-def similarity():
+'''def similarity():
     embedder = SBert()
 
     for i in proposal["data"]:
@@ -55,7 +54,7 @@ def similarity():
             if hit['score'] > 0.35:
                 print("Query:", query)
                 print(corpus[hit['corpus_id']],
-                      "(Score: {:.4f})".format(hit['score']))
+                      "(Score: {:.4f})".format(hit['score']))'''
 
 
 # 待匯入完畢後跑迴圈
@@ -66,16 +65,13 @@ category = findCategory()
 for j in category["data"]:
     m = [j["name"]]
     for i in proposal["data"]:
-        n = [i["content"].decode(encoding='utf-8', errors='ignore')]  # 政見
-        s = i["content"]
+        n = [i["title"].decode(encoding='utf-8', errors='ignore')]  #提案分類
+        s = i["title"]
         result = xs.cossim(m, n)
 
         if result > 0.4:
-            #print("類別:", m)
-            #print("政見:", n)
-            print(n)
-
-            # returnCategory(i["id"],j["id"])
-        else:
-            similarity()
+            print(result)
+            returnproCategory(i["id"],j["id"])
+        #else:
+            #similarity()
             # returnCategory(i["id"],j["id"])

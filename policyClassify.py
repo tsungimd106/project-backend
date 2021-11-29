@@ -7,6 +7,7 @@ import jieba
 import csv
 import sys
 sys.path.append('..')
+import text2vec
 from text2vec import SBert
 from sentence_transformers.util import cos_sim, semantic_search
  
@@ -18,7 +19,6 @@ def findPolicy():
     return DB.execution(DB.select, sqlstr)
  
 # 從資料庫裡抓取類別
- 
  
 def findCategory():
     sqlstr = "select id,name from category"
