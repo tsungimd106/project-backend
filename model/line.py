@@ -9,6 +9,7 @@ from linebot.models import (
 class lineModule:
 
     @staticmethod
+
     def handle_messenge(event):
         print(event)
         msg = event.message.text
@@ -27,6 +28,24 @@ class lineModule:
                                            label='台南市', text='台南市')),
                                        QuickReplyButton(action=MessageAction(
                                            label='高雄市', text='高雄市'))
+                                   ]))
+        elif (msg == "台北市"):
+           
+           
+           
+            return TextSendMessage(text="點選想查詢人物城市所在",
+                                   quick_reply=QuickReply(items=[
+                                       QuickReplyButton(action=URIAction(
+                                       label='蔣萬安',uri='https://taipei.app/#/figure/')),   
+                                        QuickReplyButton(action=URIAction(
+                                       label='何志偉',uri='https://taipei.app/#/figure/8')),
+                                        QuickReplyButton(action=URIAction(
+                                       label='吳思瑤',uri='https://taipei.app/#/figure/492')),
+                                        QuickReplyButton(action=URIAction(
+                                       label='林奕華',uri='https://taipei.app/#/figure/492')),
+                                        QuickReplyButton(action=URIAction(
+                                       label='林昶佐',uri='https://taipei.app/#/figure/492'))
+                                   
                                    ]))
         elif(msg == "蔣萬安"):
             return TextSendMessage(text=msg,
@@ -125,7 +144,7 @@ class lineModule:
                                            label='都市美化', text='都市美化')),
                                        QuickReplyButton(action=MessageAction(
                                            label='汽機車', text='汽機車')),
-                                        QuickReplyButton(action=MessageAction(
+                                       QuickReplyButton(action=MessageAction(
                                            label='環保', text='環保')),
                                        QuickReplyButton(action=MessageAction(
                                            label='體育賽事', text='體育賽事')),
