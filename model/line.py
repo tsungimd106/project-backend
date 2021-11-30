@@ -38,7 +38,7 @@ class lineModule:
                                        QuickReplyButton(action=URIAction(
                                        label='蔣萬安',uri='https://taipei.app/#/figure/')),   
                                         QuickReplyButton(action=URIAction(
-                                       label='何志偉',uri='https://taipei.app/#/figure/8')),
+                                       label='何志偉',uri='https://taipei.app/#/figure/')),
                                         QuickReplyButton(action=URIAction(
                                        label='吳思瑤',uri='https://taipei.app/#/figure/492')),
                                         QuickReplyButton(action=URIAction(
@@ -47,14 +47,7 @@ class lineModule:
                                        label='林昶佐',uri='https://taipei.app/#/figure/492'))
                                    
                                    ]))
-        elif(msg == "蔣萬安"):
-            return TextSendMessage(text=msg,
-                                   quick_reply=QuickReply(items=[
-                                       QuickReplyButton(action=URIAction(
-                                           label='點我進網站',
-                                           uri='https://taipei.app/#/figure/492'
-                                       ))
-                                   ]))
+        
         elif(msg == "個人檔案"):
             webUserid = userModel.getUserIdByLine(event.source.user_id)
             return TextSendMessage(text=msg,
@@ -66,7 +59,7 @@ class lineModule:
                                    ]))
 
         elif(msg == "選舉專區"):
-            return TextSendMessage(text="點選所想看的內容",
+           return TextSendMessage(text="點選所想看的內容",
                                    quick_reply=QuickReply(items=[
                                        QuickReplyButton(action=MessageAction(
                                            label='投票這六不', text='投票這六不')),
