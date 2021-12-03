@@ -44,8 +44,9 @@ def getList(data):
     result = []
     # print(strCond)
     sqlstr = "".join([
-        " SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel ",
+        " SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel ,cs.score ",
         " FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id ",
+        " join count_score as cs on p.id=cs.id "
         f"  {' where '+strCond if len(strCond) > 0 else ''} ",
         " order by e.area_id,p.term,f.name"
     ])

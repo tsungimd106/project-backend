@@ -6,9 +6,9 @@ from snownlp import SnowNLP
 from snownlp import sentiment
 
 
-def list(data):
+def pList(data):
     strCond = ""
-    if (isinstance(data["cond"], dict)):      
+    if (isinstance(data["cond"], dict)):
         for i in data["cond"].keys():
             if isinstance(data["cond"][i], type(list)):
                 print("is list")
@@ -21,21 +21,22 @@ def list(data):
                 if i == "title":
                     strCond += " "+i+" like \"%"+data["cond"][i]+"%\" and"
                 else:
-                    conds="( "
+                    conds = "( "
                     for j in str(data["cond"][i]).split(","):
-                        conds+= j +" ,"
-                    strCond+= " "+i+" in "+conds[:len(conds)-1]+")"+" and"
+                        conds += j + " ,"
+                    strCond += " "+i+" in "+conds[:len(conds)-1]+")"+" and"
     print(strCond)
     page = int(data["page"]) if data["page"] != None else 0
     sqlstr = [{"sql": "".join([
-        "select p.*,s.status ,pc.category_id,f.name ",
+        "select p.*,s.status ,pc.category_id,f.name,IFNULL(goodc,0) as good ,ifnull(medc,0) as med ,ifnull(badc,0) as bad  ",
         "from proposal as p join `status`  as s on p.status_id=s.id ",
         f" join (select * from proposal group by id having term =10  { ' and ' + strCond[0:len(strCond)-3] if len(strCond) > 0 else ''} limit {page*20},20) as t  on p.id=t.id ",
         " left join proposal_category as pc on p.id=pc.propsoal_id ",
-     
+
         " left join proposer as er on p.id=er.proposal_id ",
         " left join politician as po on po.id=er.politician_id ",
         " left join figure as f on po.figure_id=f.id "
+        " left join proposal_vote as pv on p.id=pv.id"
     ]), "name":"list"},
         {"sql": f"select count(*)/20 as n from proposal as p where term=10 {'and'+strCond[0:len(strCond)-3] if len(strCond) > 0 else ''}  ",
          "name": "page"}]
@@ -47,10 +48,16 @@ def list(data):
 # 加正負向分析
 
 def msg(account, mes, article_id, parent_id):
-    a = listRes = list(mes.split(" "))()
-    s = SnowNLP(a)
-    sqlstr = f"insert into message(user_id,content,proposal_id,parent_id,postive) values(\"{account}\",\"{mes}\",\"{article_id}\",\"{s.sentiments}\");"
+    try:
+        a = listRes = mes.split(" ")
+        s = SnowNLP(a)
+        print("ok")
 
+    except ValueError:
+        print("what")
+        print(ValueError)
+    # sqlstr = f"insert into message(user_id,content,proposal_id,parent_id,postive) values(\"{account}\",\"{mes}\",\"{article_id}\",{0 if parent_id==None else parent_id},\"{s.sentiments}\");"
+    sqlstr = f"insert into message(user_id,content,proposal_id,parent_id) values(\"{account}\",\"{mes}\",\"{article_id}\",{0 if parent_id==None else parent_id});"
     return DB.execution(DB.create, sqlstr)
 
 
@@ -70,13 +77,18 @@ def msgList(proposal_id, user_id):
              " left join figure as f on polit.figure_id=f.id ",
              " left join status as s on p.status_id=s.id ",
              " left join proposal_category as pc on p.id=pc.propsoal_id "
-           
+
              f"where   p.id=\"{proposal_id}\" "
 
          ]),
             "name": "detail"},
-        {"sql": f"select * from favorite where user_id=\"{proposal_id}\" and proposal_id=\"{user_id}\"",
-            "name": "heart"}, {"sql": "select * from rule", "name": "rule"}
+        {
+            "sql": f"select * from favorite where user_id=\"{proposal_id}\" and proposal_id=\"{user_id}\"",
+            "name": "heart"}, {"sql": "select * from rule", "name": "rule"},
+        {
+            "sql": f"SELECT * FROM db.proposal_vote where id=\"{proposal_id}\"",
+            "name": "vote"
+        }
     ]
     rows = DB.execution(DB.select, sqlstr)
     rows["data"]["detail"] = group(rows["data"]["detail"], ["name"], "id")
@@ -111,7 +123,6 @@ def report(user_id, message_id, remark, rule):
             {"sql": f"insert into `report_rule`(`report_id`,`rule_id`) values({report_id},{i});"})
 
     return DB.execution(DB.create, sql_Remark)
-    
 
 
 def rule():
@@ -129,9 +140,9 @@ def getCond():
 
 def great(user_id, m_id):
     sqlstr = f"insert into great(message_id,user_id) values(\"{user_id}\",\"{m_id}\")"
-    return DB.execution(DB.create,sqlstr)
+    return DB.execution(DB.create, sqlstr)
 
 
 def removeGreat(user_id, m_id):
     sqlstr = f"delete great where user_id={user_id} and message_id {m_id}"
-    return DB.execution(DB.delete,sqlstr)
+    return DB.execution(DB.delete, sqlstr)

@@ -40,10 +40,6 @@ handler = WebhookHandler("41121bf7a06d828660ce43a388cded2f")
 #  -----------------------
 
 api = Api(app)
-
-# api.add_namespace(politicianApi)
-# api.add_namespace(userApi)
-# api.add_namespace(proposalApi)
 CORS(app)
 
 

@@ -15,16 +15,7 @@ def login():
     password = content["password"]
     data = userModel.login(account, password)
     result = {"sucess": False, "data": data}
-    # if(data["success"]):
-    #     if len(data) == 1:
-    #         result["message"] = "登入成功"
-    #         result["sucess"] = True
-    #     elif len(data) == 0:
-    #         result["message"] = "登入失敗"
-    #     else:
-    #         result["message"] = "登入異常"
-    # else:
-    #     result["message"] = "登入異常"
+    print(result)
     if len(data["data"]) == 1:
         result["message"] = "登入成功"
         result["sucess"] = True
