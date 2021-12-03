@@ -27,7 +27,7 @@ class DB():
 
     @staticmethod
     def execution(type, sqlstr):
-        # print(sqlstr)
+        print(sqlstr)
         try:
             connection = mysql.connector.connect(
                 host=DB.__host,
@@ -35,19 +35,21 @@ class DB():
                 user=DB.__user,
                 password=DB.__password,
                 charset="utf8")
-            if connection.is_connected():
-                # 顯示資料庫版本
-                # db_Info = connection.get_server_info()
-                # print("資料庫版本：", db_Info)
-                # 執行傳入的sql 指令
+            if connection.is_connected():                
                 cursor = connection.cursor(dictionary=True)
                 if(isinstance(sqlstr, list)):
-                    result = {}
-                    for sqlstrItem in sqlstr:                        
-                        cursor.execute(sqlstrItem["sql"])
-                        rows = cursor.fetchall()
-                        result[sqlstrItem["name"]]=rows                        
-                    return {"success": True, "data": result}
+                    if(type == DB.create or type == DB > update):
+                        for i in sqlstr:
+                            cursor.execute(i["sql"])
+                        connection.commit()
+                        return{"success": True}
+                    else:
+                        result = {}
+                        for sqlstrItem in sqlstr:
+                            cursor.execute(sqlstrItem["sql"])
+                            rows = cursor.fetchall()
+                            result[sqlstrItem["name"]] = rows
+                        return {"success": True, "data": result}
                 else:
                     if(type == DB.create or type == DB.update):
                         cursor.execute(sqlstr)

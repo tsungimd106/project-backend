@@ -49,7 +49,7 @@ def hasUser(userid):
 
 def user(user_id):
     sqlstr = [
-        {"sql": "".join(["SELECT u.id,u.name,nick_name,degree,a.name as a_n ,gender,birthday FROM db.user as u join area as a on u.area_id=a.id where u.id=\"", user_id, "\""]), "name": "user"},
+        {"sql": "".join(["SELECT u.id,u.name,degree,a.name as a_n ,gender,birthday FROM db.user as u join area as a on u.area_id=a.id where u.id=\"", user_id, "\""]), "name": "user"},
         {"sql": "select * from area", "name": "area"},
         {
             "sql": ("".join([
