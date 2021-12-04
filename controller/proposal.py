@@ -1,4 +1,5 @@
 from flask import Blueprint, request, Response
+import model.proposalModel
 from model import proposalModel
 import json
 from coder import MyEncoder
@@ -10,7 +11,7 @@ proposalAPI = Blueprint("proposal", __name__, url_prefix="/proposal")
 
 @proposalAPI.route("", methods=["GET"])
 def find():
-    cond = ["id", "term",  "status_id", ]
+    cond = ["id", "term",  "status_id", "title"]
     content = request.args
     after = normalize_query(content)   
     condData={}
@@ -24,7 +25,7 @@ def find():
     
     
 
-    return ret(proposalModel.list(data))
+    return ret(proposalModel.pList(data))
 
 
 @proposalAPI.route("/msg", methods=["POST"])
@@ -37,7 +38,7 @@ def msg():
             account=content[cond[0]], mes=content[cond[1]], article_id=content[cond[2]], parent_id=content[cond[3]])
     else:
         data = {"success": False, "mes": t}
-
+    
     return ret(data)
 
 
@@ -102,3 +103,16 @@ def rule():
 @proposalAPI.route("/cond", methods=["GET"])
 def cond():
     return ret(proposalModel.getCond())
+
+@proposalAPI.route("/great",methods=["POST"])
+def great():
+    checkParm(["user_id","m_id"])
+    sqlstr=""
+
+@proposalAPI.route("/great",methods=["DELETE"])
+def removeGreat(m_id):
+    sqlstr=f"select * from great where id={m_id}"
+@proposalAPI.route("/great",methods=["GET"])
+def getGreat():
+    checkParm(["m_id"])
+    return ""

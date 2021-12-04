@@ -13,6 +13,7 @@ URL = "https://www.cec.gov.tw/central/cmsList/latestNews?order=asc&offset=0&limi
 DETAIL = "https://www.cec.gov.tw/central/cms/"
 TEST = "https://www.cec.gov.tw/central/cms/110news/35529"
 
+# 抓取中選會連結導向政要RUN
 
 
 def forClear(url):
@@ -23,8 +24,26 @@ def forClear(url):
         return "error"
     return BeautifulSoup(res.text, 'html.parser')
 
+# 先找到連結位置
+
 
 def po():
+    soup = forClear(DETAIL)
+    if soup != "error":
+        soup.encoding = 'utf-8'
+    b = list(soup.text)
+    data = json.loads(soup.text)
+    sql = []
+    for i in data:
+        links = soup.find("td", {"class": "col-md-10"}).find("a"["href"])
+        #for link in links.ol.children:
+            #if link != '\n':
+                #print(link.text + ':  ', link.a.get('href'))
+        sql.append({"sql": "insert into article (title,content,type,createTime) VALUES(\"%s\", \"%s\", %s,\"%s\")" % (
+            title, , 2, "2021"+date[3:]), "name": i["contentId"]})
+
+
+'''def po():
 
     soup = forClear(URL)
     if soup != "error":
@@ -43,25 +62,26 @@ def po():
         sql.append({"sql":"insert into article (title,content,type,createTime) VALUES(\"%s\", \"%s\", %s,\"%s\")" % (
         title,c,2,"2021"+date[3:]),"name":i["contentId"]})
     
-    return DB.execution(DB.create, sql)
+    return DB.execution(DB.create, sql)'''
 
 
 def gg(url):
 
-    options=Options()
+    options = Options()
     options.add_argument("--disable-notifications")
 
-    chrome=webdriver.Chrome('./chromedriver', chrome_options=options)
+    chrome = webdriver.Chrome('./chromedriver', chrome_options=options)
     chrome.get(url)
-    soup=BeautifulSoup(chrome.page_source, 'html.parser')
-    content=soup.find("div", {"class": "main-cont"})
-    #公告是純文字的
-    downloadlist=soup.find("div", {"class": "downloadlist"})
-    #公告有附檔的
+    soup = BeautifulSoup(chrome.page_source, 'html.parser')
+    connection = soup.find("")
+    content = soup.find("div", {"class": "main-cont"})
+    # 公告是純文字的
+    downloadlist = soup.find("div", {"class": "downloadlist"})
+    # 公告有附檔的
 
     chrome.close()
     return (content.prettify()) + (downloadlist.prettify())
-    #輸出排版後的兩者合併
-    
+    # 輸出排版後的兩者合併
+
 
 po()

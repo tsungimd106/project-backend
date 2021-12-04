@@ -15,6 +15,7 @@ def group(data: dict, tag: list, identity: str):
     for i in range(len(tag)):
         tags.append(set())
     check_id = -1
+    temp={}
     for i in data:        
         if i[identity] != check_id:                        
             if check_id != -1:                
@@ -26,8 +27,11 @@ def group(data: dict, tag: list, identity: str):
             tags.clear()
             for j in range(len(tag)):
                 tags.append(set())
-            else:
+            else:                
                 temp = i
         for j in range(len(tag)):              
             tags[j].add(i[tag[j]])
+    for j in range(len(tag)):
+        temp[tag[j]] = tags[j]
+    ret.append(temp)
     return ret
