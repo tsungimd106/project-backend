@@ -45,19 +45,19 @@ def pList(data):
     return ({"data": {"list": result, "page": math.ceil(rows["data"]["page"][0]["n"]), }, "success": True})
 
 
-# 加正負向分析
-
-def msg(account, mes, article_id, parent_id):
+def msg(account, mes, article_id, parent_id,sen):
     try:
-        a = listRes = mes.split(" ")
+        a = listRes = list(mes.split(" "))
         s = SnowNLP(a)
+        sen = s.sentiments
+        print(sen)
         print("ok")
 
     except ValueError:
         print("what")
         print(ValueError)
     # sqlstr = f"insert into message(user_id,content,proposal_id,parent_id,postive) values(\"{account}\",\"{mes}\",\"{article_id}\",{0 if parent_id==None else parent_id},\"{s.sentiments}\");"
-    sqlstr = f"insert into message(user_id,content,proposal_id,parent_id) values(\"{account}\",\"{mes}\",\"{article_id}\",{0 if parent_id==None else parent_id});"
+    sqlstr = f"insert into message(user_id,content,proposal_id,parent_id,postive) values(\"{account}\",\"{mes}\",\"{article_id}\",{0 if parent_id==None else parent_id},\"{sen}\");"
     return DB.execution(DB.create, sqlstr)
 
 
