@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import time
+import os
 time1=time.time()
 
 # DFA演算法
@@ -30,8 +31,10 @@ class DFAFilter():
         if i == len(chars) - 1:
             level[self.delimit] = 0
 
-    def parse(self, path):
-        with open(path,encoding='utf-8') as f:
+    def parse(self):
+        THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+        my_file = os.path.join(THIS_FOLDER, 'sensitive.txt')
+        with open(my_file,encoding='utf-8') as f:
             for keyword in f:
                 self.add(str(keyword).strip())
 

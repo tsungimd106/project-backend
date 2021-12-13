@@ -39,10 +39,6 @@ def getList(data):
             for j in data[i]:
                 c += f" '{j}' ,"
             strCond += f" { c[0:len(c)-1]} )"
-
-    # print(data)
-    result = []
-    # print(strCond)
     sqlstr = "".join([
         " SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel ,cs.score ",
         " FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id ",
@@ -73,11 +69,7 @@ def getDetail(data):
         {
             "sql": f"select p.id,p.content,c.name ,c.id as c_id from policy as p join policy_category as pc on pc.policy_id=p.id join category as c on pc.category_id=c.id where politician_id={data['id']} order by p.id",
             "name": "policy"
-        }, {
-            "sql": f"SELECT a.* FROM db.attendance as a join politician as p on a.politician_id=p.id join figure as f on p.figure_id=f.id where f.id in (select figure_id from politician where id=\"{data['id']}\")",
-            "name": "attend"
-
-        }, {
+        },  {
             "sql": "".join(["SELECT * FROM table_policy where  p_id =\"", data["id"], "\"", " order by quota desc ,total desc"]), "name":"table_policy"
         },
         {
@@ -88,6 +80,41 @@ def getDetail(data):
             "sql": "".join(["select *,count(*) as quota from proposer where politician_id=", data["id"], " group by politician_id "]), "name":"proposal_quota"
         }, {
             "sql": "".join(["select * from proposer as er join proposal as p on er.proposal_id=p.id where er.politician_id=\"", data["id"], "\""]), "name":"proposal"
+        },
+        {
+            "sql": f"SELECT session,attend FROM db.attendance  where politician_id={data['id']} group by `session` ;", "name": "attend"
+        },
+        {
+            "sql": f"SELECT session,sum(attend)/count(*) as avg FROM db.attendance group by `session` ;",            "name": "trend_attend_group"
+        },
+        {
+            "sql": f"select s.status,ifnull(d.c,0) as c  from status as s left join (select status_id,count(*) as c from proposer as er  left join proposal as po on er.proposal_id=po.id where er.politician_id={data['id']} group by status_id ) d on d.status_id=s.id ",
+            "name": "pro"
+        },
+        {
+            "sql": f"select s.status,ifnull(d.c,0)/113 as c from status as s left join (select status_id,count(*) as c from proposer as er  left join proposal as po on er.proposal_id=po.id  group by status_id ) d on d.status_id=s.id ",
+            "name": "trend_pro"
+        },
+        {
+            "sql": "".join([
+                "SELECT   fakeD.t ,ifnull(realD.score,0) as score from  ",
+                " (select concat(year(up.time),'-',month(up.time)) as t from user_policy as up group by month(up.time)) fakeD "
+                "left join (SELECT   (SUM(`s`.`value`) / COUNT(`s`.`name`)) AS `score`,   `po`.`politician_id` AS `politician_id`,  concat(year(up.time),'-',month(up.time)) as t  "
+                "FROM  ((`policy` `po`  JOIN `user_policy` `up` ON ((`up`.`policy_id` = `po`.`id`))) ",
+                f"JOIN `schedule` `s` ON ((`up`.`ps_id` = `s`.`id`)))  where politician_id={data['id']} GROUP BY month(up.time) ) realD on fakeD.t=realD.t "
+
+            ]),
+            "name": "trend_policy"
+        }, {
+            "name": "trend_policy_group",
+            "sql": "".join([
+                "SELECT   fakeD.t ,ifnull(realD.score,0) as score from  ",
+                " (select concat(year(up.time),'-',month(up.time)) as t from user_policy as up group by month(up.time)) fakeD "
+                "left join (SELECT   (SUM(`s`.`value`) / COUNT(`s`.`name`)) AS `score`,   `po`.`politician_id` AS `politician_id`,  concat(year(up.time),'-',month(up.time)) as t  "
+                "FROM  ((`policy` `po`  JOIN `user_policy` `up` ON ((`up`.`policy_id` = `po`.`id`))) ",
+                f"JOIN `schedule` `s` ON ((`up`.`ps_id` = `s`.`id`)))    GROUP BY month(up.time) ) realD on fakeD.t=realD.t "
+
+            ]),
         }
     ]
 

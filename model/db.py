@@ -18,6 +18,9 @@ class DB():
     @property
     def delete(self):
         return 3
+    @property
+    def store_p(self):
+        return 5
 
     __host = '140.131.114.148'
     __user = 'root'
@@ -38,11 +41,15 @@ class DB():
             if connection.is_connected():                
                 cursor = connection.cursor(dictionary=True)
                 if(isinstance(sqlstr, list)):
-                    if(type == DB.create or type == DB > update):
+                    if(type == DB.create or type == DB.update):
                         for i in sqlstr:
                             cursor.execute(i["sql"])
                         connection.commit()
                         return{"success": True}
+                    elif(type==DB.store_p):
+                        cursor.callproc(sqlstr["name"], sqlstr["arg"])                     
+                        resD=cursor.stored_results()
+                        return{"success": True,"data":resD}
                     else:
                         result = {}
                         for sqlstrItem in sqlstr:
@@ -55,11 +62,15 @@ class DB():
                         cursor.execute(sqlstr)
                         connection.commit()
                         return {"success": True}
+                    elif(type==DB.store_p):
+                        cursor.callproc(sqlstr["name"], sqlstr["arg"])                     
+                        resD=cursor.stored_results()
+                        print(resD)
+                        return{"success": True,"data":resD}
                     else:
                         cursor.execute(sqlstr)
                         rows = cursor.fetchall()
                         return {"success": True, "data": rows}
-
                 cursor.close()
                 connection.close()
                 print("enter close")

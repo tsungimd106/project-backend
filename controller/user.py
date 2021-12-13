@@ -15,7 +15,6 @@ def login():
     password = content["password"]
     data = userModel.login(account, password)
     result = {"sucess": False, "data": data}
-    print(result)
     if len(data["data"]) == 1:
         result["message"] = "登入成功"
         result["sucess"] = True
@@ -38,7 +37,6 @@ def sign():
     if(result["message"] == ""):
         data = userModel.sign(content["account"], content["password"],
                               content["age"], content["sex"], content["areaid"], content["name"])
-        print(data)
         if(data["success"]):
             result["message"] = "註冊成功"
             result["success"] = True
@@ -82,7 +80,6 @@ def edit():
             if(len(oldPasswordFromDB) == 1):
                 oldPasswordFromDB = oldPasswordFromDB[0]["password"].decode()
                 if(oldPasswordFromDB):
-                    print(oldPasswordFromDB)
                     if(oldPasswordFromDB != content["oldPassword"]):
                         result["message"] += "輸入舊密碼錯誤\n"
                     if(content["password"] != content["passwordConfire"]):
@@ -109,7 +106,6 @@ def changeProfile():
         if(i in content.keys()):
             data[i] = content[i]
     data = userModel.changeProfile(data, account)
-    print(data)
     result = {"success": False, "message": "修改異常", "data": data}
     if(data["success"]):
         result["success"] = True
