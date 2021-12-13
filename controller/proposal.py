@@ -1,7 +1,7 @@
 from flask import Blueprint, request, Response
 from model.filter import DFAFilter
 import model.proposalModel
-from filter import DFAFilter
+from model.filter import DFAFilter
 from model import proposalModel
 import json
 from coder import MyEncoder
@@ -33,25 +33,22 @@ def find():
 @proposalAPI.route("/msg", methods=["POST"])
 def msg():
     print("here")
-    # content = request.json
-    # cond = ["user_id", "content", "article_id", "parent_id"]
-    # t = checkParm(cond, content)
-    # print("test")
-    # if(isinstance(t, dict)):
-    #     gfw = DFAFilter()
-    #     path="../sensitive.txt"
-    #     gfw.parse(path)
-    #     text=content["content"]
-    #     result = gfw.filter(text)
-    #     if len(str(content["content"]).replace("*",""))==len(str(result).replace("*","")):
-    #         data = proposalModel.msg(
-    #         account=content[cond[0]], mes=content[cond[1]], article_id=content[cond[2]], parent_id=content[cond[3]])
-    #     else:
-    #         data = {"success": False, "mes": "請確認是否有不雅字詞出現"}    
-    # else:
-    #     data = {"success": False, "mes": t}
-    # print("see you")
-    return ret({"success": False, "mes": "t"})
+    content = request.json
+    cond = ["user_id", "content", "article_id", "parent_id"]
+    t = checkParm(cond, content)
+    if(isinstance(t, dict)):
+        gfw = DFAFilter()        
+        gfw.parse()
+        text=content["content"]
+        result = gfw.filter(text)
+        if len(str(content["content"]).replace("*",""))==len(str(result).replace("*","")):
+            data = proposalModel.msg(
+            account=content[cond[0]], mes=content[cond[1]], article_id=content[cond[2]], parent_id=content[cond[3]])
+        else:
+            data = {"success": False, "mes": "請確認是否有不雅字詞出現"}    
+    else:
+        data = {"success": False, "mes": t}
+    return ret(data)
 
 
 @proposalAPI.route("/<p_id>", methods=["GET"])
@@ -70,7 +67,6 @@ def vote():
     else:
         data = proposalModel.vote(
             userid=content[cond[0]], sp_id=content[cond[1]], proposal_id=content[cond[2]])
-
     return ret(data)
 
 
