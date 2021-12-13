@@ -51,7 +51,6 @@ def msg(account, mes, article_id, parent_id):
         # a =  mes.split(" ")
         s = SnowNLP(mes)
         sqlstr = f"insert into message(user_id,content,proposal_id,parent_id,postive) values(\"{account}\",\"{mes}\",\"{article_id}\",{0 if parent_id==None else parent_id},\"{s.sentiments}\");"
-       
         print(s.sentiments)
         print("ok")
 
