@@ -11,7 +11,6 @@ def pList(data):
     if (isinstance(data["cond"], dict)):
         for i in data["cond"].keys():
             if isinstance(data["cond"][i], type(list)):
-                print("is list")
                 for j in data["cond"][i]:
                     if j == "title":
                         strCond += " '"+j+"` like\"%"+j+"%\" and"
@@ -25,7 +24,6 @@ def pList(data):
                     for j in str(data["cond"][i]).split(","):
                         conds += j + " ,"
                     strCond += " "+i+" in "+conds[:len(conds)-1]+")"+" and"
-    print(strCond)
     page = int(data["page"]) if data["page"] != None else 0
     sqlstr = [{"sql": "".join([
         "select p.*,s.status ,pc.category_id,f.name,IFNULL(goodc,0) as good ,ifnull(medc,0) as med ,ifnull(badc,0) as bad  ",
@@ -46,26 +44,25 @@ def pList(data):
 
 
 def msg(account, mes, article_id, parent_id):
-    print("see here")
     try:
-        # a =  mes.split(" ")
         s = SnowNLP(mes)
         sqlstr = f"insert into message(user_id,content,proposal_id,parent_id,postive) values(\"{account}\",\"{mes}\",\"{article_id}\",{0 if parent_id==None else parent_id},\"{s.sentiments}\");"
-        print(s.sentiments)
-        print("ok")
+
 
     except ValueError:
         sqlstr = f"insert into message(user_id,content,proposal_id,parent_id) values(\"{account}\",\"{mes}\",\"{article_id}\",{0 if parent_id==None else parent_id});"
         print("what")
         print(ValueError)
-    
-    
+
     return DB.execution(DB.create, sqlstr)
 
 
 def vote(userid, sp_id, proposal_id):
-    sqlstr = f"insert into user_proposal(user_id,stand_id,proposal_id) values(\"{userid}\",\"{sp_id}\",\"{proposal_id}\")"
-    return DB.execution(DB.create, sqlstr)
+    sqlstr = {"name": "proposal_vote", "arg": [
+        f"{userid}", f"{proposal_id}", f"{sp_id}"]}
+
+    # sqlstr = f"insert into user_proposal(user_id,stand_id,proposal_id) values(\"{userid}\",\"{sp_id}\",\"{proposal_id}\")"
+    return DB.execution(DB.store_p, sqlstr)
 
 
 def msgList(proposal_id, user_id):
@@ -119,7 +116,6 @@ def report(user_id, message_id, remark, rule):
     report_id = DB.execution(
         DB.select, f"select id from(select * from report  order by id) y where id in ( select max(id) from report where user_id=\"{user_id}\" )")
     report_id = report_id["data"][0]["id"]
-    print(report_id)
     for i in rule:
         sql_Remark.append(
             {"sql": f"insert into `report_rule`(`report_id`,`rule_id`) values({report_id},{i});"})

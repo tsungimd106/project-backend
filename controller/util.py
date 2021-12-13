@@ -1,4 +1,4 @@
-from flask import Response,jsonify,make_response
+from flask import Response, jsonify, make_response
 import json
 from coder import MyEncoder
 
@@ -7,21 +7,22 @@ def checkParm(cond, content, option=None):
     res = ""
     result = {}
     for i in cond:
-        print(i)
         if(i not in content.keys()):
             res += "缺少必要參數 %s\n" % i
             break
         else:
-            result[i] = content[i]    
+            result[i] = content[i]
     return res if len(res) > 0 else result
 
 
-def ret(result):    
-    mes="成功" if result["success"] else "失敗"
-    resultData=result["data"] if "data" in result else {}   
-    return make_response(json.dumps({"D":resultData,"message":mes,"success":result["success"]}, cls=MyEncoder))
+def ret(result):
+    print(result)
+    mes= " " if "mes"  not in result.keys() else result["mes"]
+    resultData = result["data"] if "data" in result else {}
+    return make_response(json.dumps({"D": resultData, "message": mes, "success": result["success"], }, cls=MyEncoder))
 
 # 好像不能用
+
 
 def normalize_query_param(value):
     """
@@ -33,6 +34,7 @@ def normalize_query_param(value):
     :return: a normalized query parameter value
     """
     return value if len(value) > 1 else value[0]
+
 
 def normalize_query(params):
     """

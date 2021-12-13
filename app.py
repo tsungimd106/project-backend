@@ -23,7 +23,7 @@ from model import userModel
 from controller.util import ret
 
 from flask_cors import CORS
-from flask_restplus import Resource, Api
+
 
 
 app = Flask(__name__)
@@ -39,7 +39,7 @@ line_bot_api = LineBotApi(
 handler = WebhookHandler("41121bf7a06d828660ce43a388cded2f")
 #  -----------------------
 
-api = Api(app)
+
 CORS(app)
 
 
@@ -58,7 +58,6 @@ def lineLogin():
     rText = r.text
 
     if("error" not in rText):
-        # print(r.text)
         j = json.loads(r.text)
         token = j["access_token"]
         secondR = requests.get(
@@ -66,7 +65,6 @@ def lineLogin():
         secondText = secondR.text
         if("error" not in secondText):
             secondJ = json.loads(secondText)
-            # print(secondJ["userId"])
             userLineID = secondJ["userId"]
             print(userLineID)
             data = userModel.getUserByLine(userLineID)
