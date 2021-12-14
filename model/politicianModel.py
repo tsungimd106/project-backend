@@ -135,7 +135,7 @@ def changePolitician(data, id):
 
 
 def getArea():
-    sqlstr = "SELECT name FROM db.area order by id;"
+    sqlstr = "SELECT id as value ,name as text FROM db.area order by id;"
     strCond = ""
     return DB.execution(DB.select, sqlstr)
 
@@ -164,7 +164,7 @@ def schedule():
     return DB.execution(DB.select, sqlstr)
 
 
-def score(user_id, policy_id, ps_id, remark):
-    sqlstr = (
-        f"insert into user_policy(user_id,policy_id,ps_id,remark) values(\"{user_id}\",\"{policy_id}\",\"{ps_id}\",\"{remark}\")")
-    return DB.execution(DB.create, sqlstr)
+def score(user_id, policy_id, ps_id, remark):   
+    sqlstr = {"name": "policy_vote", "arg": [
+        f"{user_id}", f"{policy_id}", f"{ps_id}",f"{remark}"]}
+    return DB.execution(DB.store_p, sqlstr)
