@@ -59,7 +59,7 @@ def setIdentity():
     cond = ["user_id", "identity"]
     t = checkParm(cond,content)
     if(isinstance(t, dict)):
-        return ret(manageModel.setIdentity(content.user_id, content.identity))
+        return ret(manageModel.setIdentity(t["user_id"], t["identity"]))
     else:
         return ret({"success": False, "message": t})
 

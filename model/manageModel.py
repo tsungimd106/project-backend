@@ -3,8 +3,7 @@ import json
 
 
 def setIdentity(user_id, identity):
-    sqlstr = "update user set identity=%s where id=\"%s\"" %(
-        user_id,identity)
+    sqlstr = f"update user set identity={identity} where id=\"{user_id}\""
     return DB.execution(DB.update, sqlstr)
 
 
@@ -24,9 +23,9 @@ def getUser():
 
 
 def reportCheck(check, report_id, manager_id, time):
-    sqlstr = "update report set check=%s where id=\"%s\"" %(
-              check, report_id)
-    if(check==1):
+    sqlstr = "update report set check=%s where id=\"%s\"" % (
+        check, report_id)
+    if(check == 1):
         sqlstr.append("insert into freezen (manager_id,report_id,time) values(%s,%s,%s)" % (
             manager_id, report_id, time))
     return DB.execution(DB.select, sqlstr)
