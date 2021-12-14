@@ -37,7 +37,8 @@ class DB():
                 database=DB.__dbname,
                 user=DB.__user,
                 password=DB.__password,
-                charset="utf8")
+                charset="utf8",
+                )
             if connection.is_connected():                
                 cursor = connection.cursor(dictionary=True)
                 if(isinstance(sqlstr, list)):
@@ -49,6 +50,7 @@ class DB():
                     elif(type==DB.store_p):
                         cursor.callproc(sqlstr["name"], sqlstr["arg"])                     
                         resD=cursor.stored_results()
+                        connection.commit()
                         return{"success": True,"data":resD}
                     else:
                         result = {}
@@ -65,8 +67,9 @@ class DB():
                     elif(type==DB.store_p):
                         cursor.callproc(sqlstr["name"], sqlstr["arg"])                     
                         resD=cursor.stored_results()
+                        connection.commit()
                         print(resD)
-                        return{"success": True,"data":resD}
+                        return{"success": True,"data":f"{resD}"}
                     else:
                         cursor.execute(sqlstr)
                         rows = cursor.fetchall()
