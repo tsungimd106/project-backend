@@ -1,4 +1,5 @@
 from flask import Blueprint, request, Response
+from controller.proposal import cond
 from model import (userModel, manageModel, politicianModel,
                    proposalModel, articleModel)
 import json
@@ -50,16 +51,17 @@ def identity():
     return ret(manageModel.identity())
 
 # 未完成
-
+# 轉身分
 
 @manageAPI.route("/identity", methods=["POST"])
 def setIdentity():
     content = request.json
-    t = checkParm(["user_id", "identity"])
-    if(t == ""):
+    cond = ["user_id", "identity"]
+    t = checkParm(cond,content)
+    if(isinstance(t, dict)):
         return ret(manageModel.setIdentity(content.user_id, content.identity))
     else:
-        return ret(t)
+        return ret({"success": False, "message": t})
 
 
 @manageAPI.route("/user", methods=["GET"])
@@ -71,16 +73,16 @@ def identityUser():
 def getReport():
     return ret(manageModel.report())
 
-# 未完成
-
-
+# 檢舉審核
 @manageAPI.route("/report", methods=["POST"])
 def report():
     content = request.json
-    cond = ["report_id", "manager_id", "check", "time"]
+    cond = [ "check","report_id","manager_id","time"]
     t = checkParm(cond, content)
     if(isinstance(t, dict)):
-        return ret(manageModel.reportCheck(content.check, content.report_id, content.manager_id,))
+        data = manageModel.reportCheck(
+           check=content[cond[0]], report_id=content[cond[1]], manager_id=content[cond[2]],time=content[cond[3]])
+        return ret(data)
     else:
         return ret({"success": False, "message": t})
 
