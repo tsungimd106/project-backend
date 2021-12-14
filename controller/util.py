@@ -16,7 +16,7 @@ def checkParm(cond, content, option=None):
 
 
 def ret(result):
-    print(result)
+    # print(result)
     mes= " " if "mes"  not in result.keys() else result["mes"]
     resultData = result["data"] if "data" in result else {}
     return make_response(json.dumps({"D": resultData, "message": mes, "success": result["success"], }, cls=MyEncoder))

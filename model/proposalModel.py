@@ -60,8 +60,6 @@ def msg(account, mes, article_id, parent_id):
 def vote(userid, sp_id, proposal_id):
     sqlstr = {"name": "proposal_vote", "arg": [
         f"{userid}", f"{proposal_id}", f"{sp_id}"]}
-
-    # sqlstr = f"insert into user_proposal(user_id,stand_id,proposal_id) values(\"{userid}\",\"{sp_id}\",\"{proposal_id}\")"
     return DB.execution(DB.store_p, sqlstr)
 
 

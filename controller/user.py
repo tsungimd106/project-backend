@@ -29,7 +29,7 @@ def login():
 @userProfile.route("/sign", methods=["POST"])
 def sign():
     content = request.json
-    cond = ["account", "password", "age", "sex", "areaid", "name"]
+    cond = ["account", "password", "age", "sex", "areaid", "name","degree"]
     result = {"success": False, "message": ""}
     for i in cond:
         if(i not in content.keys()):

@@ -9,17 +9,17 @@ def login(account, password):
 
 
 def findPasswordByAccount(account):
-    sqlstr = f"select password from user where id=\"{account}\"" 
+    sqlstr = f"select password from user where id=\"{account}\""
     return DB.execution(DB.select, sqlstr)
 
 
 def changePassword(account, password):
-    sqlstr = f"update user set password = \"{password}\" where id = \"{account}\"" 
+    sqlstr = f"update user set password = md5(\"{password}\") where id = \"{account}\""
     return DB.execution(DB.update, sqlstr)
 
 
-def sign(account, password, age, gender, area, name):
-    sqlstr = f"insert into user(id, password,age,gender,area_id,name) VALUES (\"{account}\", \"{password}\" ,\"{age}\" ,\"{gender}\",\"{area}\",\"{name}\")" 
+def sign(account, password, age, gender, area, name, degree):
+    sqlstr = f"insert into user(id, password,birthday,gender,area_id,name,degree) VALUES (\"{account}\", md5(\"{password}\") ,\"{age}\" ,\"{gender}\",\"{area}\",\"{name}\",\"{degree}\")"
     return DB.execution(DB.create, sqlstr)
 
 
@@ -27,8 +27,8 @@ def changeProfile(data, account):
     strCond = ""
     if(isinstance(data, dict)):
         for i in data.keys():
-            strCond += f" {i} = \"{data[i]}\" ," 
-    sqlstr = f"update user set {strCond[0:len(strCond)-1]} where id=\"{account}\"" 
+            strCond += f" {i} = \"{data[i]}\" ,"
+    sqlstr = f"update user set {strCond[0:len(strCond)-1]} where id=\"{account}\""
     return DB.execution(DB.update, sqlstr)
 
 
@@ -43,7 +43,7 @@ def findUserarea(area):
 
 
 def hasUser(userid):
-    sqlstr = f"select count(*) from user where id=\"{userid}\"" 
+    sqlstr = f"select count(*) from user where id=\"{userid}\""
     return DB.execution(DB.select, sqlstr)
 
 
@@ -86,52 +86,55 @@ def user(user_id):
     data = DB.execution(DB.select, sqlstr)
 
     data["data"]["save"] = group(data["data"]["save"], [
-                                    "f_name", "c_name"], "id")
-    data["data"]["policy_vote"] = group(data["data"]["policy_vote"], ["c_name"], "id")
-    
+        "f_name", "c_name"], "id")
+    data["data"]["policy_vote"] = group(
+        data["data"]["policy_vote"], ["c_name"], "id")
+
     msg = []
     proposal_id = data["data"]["msg"][0]["proposal_id"]
-    m_id=data["data"]["msg"][0]["id"]
+    m_id = data["data"]["msg"][0]["id"]
     title = ""
     item = {}
     m = []
-    c_name=set()
-    f_name=set()
+    c_name = set()
+    f_name = set()
     for i in data["data"]["msg"]:
         if i["proposal_id"] != proposal_id:
             if proposal_id != -1:
                 item["content"] = m
-                item["c_name"]=c_name
-                item["f_name"]=f_name
-                item["proposal_id"]=i["proposal_id"]
-                item["title"]=i["title"]
-                c_name=set()
-                f_name=set()
+                item["c_name"] = c_name
+                item["f_name"] = f_name
+                item["proposal_id"] = i["proposal_id"]
+                item["title"] = i["title"]
+                c_name = set()
+                f_name = set()
                 msg.append(item)
                 item = {}
                 m = []
             proposal_id = i["proposal_id"]
-        if(m_id!=i["id"]):
-            m_id=i["id"]
-            m.append({"content": i["content"], "time": i["time"],"postive":i["postive"],"id":i["id"]})
+        if(m_id != i["id"]):
+            m_id = i["id"]
+            m.append({"content": i["content"], "time": i["time"],
+                      "postive": i["postive"], "id": i["id"]})
         c_name.add(i["c_name"])
         f_name.add(i["f_name"])
     item["content"] = m
-    item["c_name"]=c_name
-    item["f_name"]=f_name
-    item["proposal_id"]=i["proposal_id"]
-    item["title"]=i["title"]
+    item["c_name"] = c_name
+    item["f_name"] = f_name
+    item["proposal_id"] = i["proposal_id"]
+    item["title"] = i["title"]
     msg.append(item)
     data["data"]["msg"] = msg
-    
-    
+
     return data
 
 
 def getUserIdByLine(line_id):
-    sqlstr = f"select id from user where line=\"{line_id}\"" 
+    sqlstr = f"select id from user where line=\"{line_id}\""
     data = DB.execution(DB.select, sqlstr)
     return str(data["data"][0]["id"].decode())
+
+
 def getUserByLine(line_id):
-    sqlstr=f"select * from user where line=\"{line_id}\""
-    return DB.execution(DB.select,sqlstr)
+    sqlstr = f"select * from user where line=\"{line_id}\""
+    return DB.execution(DB.select, sqlstr)
