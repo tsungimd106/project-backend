@@ -23,21 +23,16 @@ def stringToList(string):
 datas = findMessage()
 
 
-#小於等於0.4的结果為負面情感結果
-#f1=open('neg.txt','w',encoding='utf-8')
-
-#大於0.4的結果為正面情感結果
-#f2=open('pos.txt','w',encoding='utf-8')
-
-
 for i in datas["data"]:
     a = str(i["content"], encoding='utf-8')
     stringToList(a)
-
     s=SnowNLP(a)
+
+    #小於等於0.4的結果為負面情感結果
     if s.sentiments <=0.4:
         #f1.write(a+'\t'+str(s.sentiments)+'\n')
         returnMessage(s.sentiments,i["id"])
+    #大於0.4的結果為正面情感結果
     else:
         #f2.write(a + '\t' + str(s.sentiments) + '\n')
         returnMessage(s.sentiments,i["id"])
