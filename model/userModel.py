@@ -49,11 +49,11 @@ def hasUser(userid):
 
 def user(user_id):
     sqlstr = [
-        {"sql": "".join(["SELECT u.id,u.name,degree,a.name as a_n ,gender,birthday FROM db.user as u join area as a on u.area_id=a.id where u.id=\"", user_id, "\""]), "name": "user"},
+        {"sql": "".join(["SELECT u.id,u.name,degree,a.name as a_n ,gender,birthday,line FROM db.user as u join area as a on u.area_id=a.id where u.id=\"", user_id, "\""]), "name": "user"},
         {"sql": "select * from area", "name": "area"},
         {
-            "sql": ("".join([
-                "select p.*,s.status ,fi.name as f_name,c.name as c_name from favorite as f ",
+            "sql": (" ".join([
+                "select p.*,s.status ,fi.name as f_name,c.name as c_name ,pv.goodc,badc,medc  from favorite as f ",
                 "join proposal as p on f.proposal_id=p.id ",
                 "join status as s on p.status_id=s.id ",
                 "left join proposer as er on p.id=er.proposal_id ",
@@ -61,6 +61,7 @@ def user(user_id):
                 "left join figure as fi on po.figure_id=fi.id ",
                 "left join proposal_category as pc on p.id=pc.propsoal_id ",
                 "left join category as c on pc.category_id=c.id ",
+                " left join db.proposal_vote as pv on pv.id=p.id "
                 "where user_id= \"",
                 user_id, "\" group by p.id,er.politician_id,c_name "
             ])),
@@ -82,7 +83,14 @@ def user(user_id):
             "sql": "".join(["select p.*,s.name as type ,c.name as c_name from user_policy  as up  join policy as p on up.policy_id=p.id join schedule as s on up.ps_id=s.id join policy_category as pc on pc.policy_id=p.id join category as c on pc.category_id=c.id where user_id=\"", user_id, "\" group by up.id,p.id,c.id "]),
             "name": "policy_vote"
         },
-        {"sql": "".join(["select user_id,p.*,s.type from user_proposal as up  join stand as s on up.stand_id=s.id join proposal as p on up.proposal_id=p.id group by p.id having user_id =\"", user_id, "\""]), "name": "proposal_vote"}]
+        {
+            "sql": "".join(["select user_id,p.*,s.type from user_proposal as up  join stand as s on up.stand_id=s.id join proposal as p on up.proposal_id=p.id group by p.id having user_id =\"", user_id, "\""]),
+            "name": "proposal_vote"
+        }, {
+            "sql": f"SELECT c.* FROM user_category as uc join category as c on uc.category_id=c.id where user_id=\"{user_id}\"", "name": "category"
+        }
+
+    ]
     data = DB.execution(DB.select, sqlstr)
 
     data["data"]["save"] = group(data["data"]["save"], [
@@ -139,4 +147,38 @@ def getUserIdByLine(line_id):
 
 def getUserByLine(line_id):
     sqlstr = f"select * from user where line=\"{line_id}\""
+    return DB.execution(DB.select, sqlstr)
+
+
+def setCateogry(user_id, add, remove):
+    sqlstrs = []
+    if len(add) > 0:
+        for i in add:
+
+            sqlstrs.append(
+                {"sql": f"insert into user_category (user_id,category_id) values(\"{user_id}\",{i}) ; "})
+    removes = []
+
+    if len(remove) > 0:
+        for i in remove:
+            removes.push(f"{i}")
+        delStr = f"delete user_category where user_id=\"{user_id}\" and category_id in ({' , '.join(removes)})"
+        sqlstrs.append({"sql": delStr})
+    return DB.execution(DB.create, sqlstrs)
+
+
+def politician_user(p_id):
+    sqlstr = [
+        {
+            "sql":
+
+            "SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel,pa.name as p_name,e.name as e_n,e.remark"
+            + " FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id join party as pa on p.party_id=pa.id"
+            + f" where p.id=\" {p_id} \" order by e.area_id,p.term,f.name",              "name": "detail"
+        }, {
+            "sql": "".join(["SELECT * FROM count_score where  id =\"", p_id, "\""]), "name":"count_score"
+        }, {
+
+        }
+    ]
     return DB.execution(DB.select, sqlstr)

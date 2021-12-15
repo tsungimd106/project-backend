@@ -3,6 +3,8 @@ from model import userModel, proposalModel
 import json
 from coder import MyEncoder
 from flask import app
+
+from model.db import DB
 from .util import checkParm, ret
 
 userProfile = Blueprint("user", __name__, url_prefix="/user")
@@ -14,16 +16,16 @@ def login():
     account = content['account']
     password = content["password"]
     data = userModel.login(account, password)
-    result = {"sucess": False, "data": data}
+    result = {"success": False, "data": data}
     if len(data["data"]) == 1:
         result["message"] = "登入成功"
-        result["sucess"] = True
+        result["success"] = True
     elif len(data["data"]) == 0:
         result["message"] = "登入失敗"
     else:
         result["message"] = "登入異常"
 
-    return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
+    return ret(result)
 
 
 @userProfile.route("/sign", methods=["POST"])
@@ -31,26 +33,17 @@ def sign():
     content = request.json
     cond = ["account", "password", "age", "sex", "areaid", "name", "degree"]
     result = {"success": False, "message": ""}
-    for i in cond:
-        if(i not in content.keys()):
-            result["message"] += "缺少必要參數 %s\n" % i
-    if(result["message"] == ""):
-        data = userModel.sign(content["account"], content["password"],
-                              content["age"], content["sex"], content["areaid"], content["name"])
+    t = checkParm(cond, content)
+
+    if(isinstance(t, dict)):
+        data = userModel.sign(t["account"], t["password"],
+                              t["age"], t["sex"], t["areaid"], t["name"], t["degree"])
         if(data["success"]):
             result["message"] = "註冊成功"
             result["success"] = True
         else:
             result["message"] = "註冊異常"
-    return Response(json.dumps(result, cls=MyEncoder))
-
-
-@userProfile.route("/findUserarea", methods=["GET"])
-def findUserarea():
-    content = request.json
-    area = content["area"]
-    data = userModel.findUserarea(area)
-    return Response(json.dumps(data, cls=MyEncoder), mimetype="application/json")
+    return ret(result)
 
 
 @userProfile.route("/<u_id>", methods=["GET"])
@@ -91,14 +84,14 @@ def edit():
                 result["message"] = "輸入舊密碼錯誤"
             else:
                 result["message"] = "帳號異常"
-    return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
+    return ret(result)
 
 
 @userProfile.route("/", methods=["PATCH"])
 def changeProfile():
     content = request.json
     account = content["account"]
-    cond = [ "area_id","name"]
+    cond = ["area_id", "name"]
     data = {}
     for i in cond:
         if(i in content.keys()):
@@ -108,14 +101,14 @@ def changeProfile():
     if(data["success"]):
         result["success"] = True
         result["message"] = "修改成功"
-    return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
+    return ret(result)
 
 
-@userProfile.route("/msg/<u_id>", methods=["GET"])
-def getMsg(u_id):
-    return ret(proposalModel.msgListByUser(u_id))
-
-
-@userProfile.route("vote/<u_id>", methods=["GET"])
-def getVote(u_id):
-    return ret("")
+@userProfile.route("/category", methods=["POST"])
+def c():
+    content = request.json
+    t = checkParm(["user_id", "add", "remove"],content)
+    if isinstance(t, dict):
+        return ret(userModel.setCateogry(t["user_id"], t["add"], t["remove"]))
+    else:
+        return ret({"success": False, "mes": t})
