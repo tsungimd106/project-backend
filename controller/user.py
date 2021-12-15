@@ -3,7 +3,7 @@ from model import userModel, proposalModel
 import json
 from coder import MyEncoder
 from flask import app
-from .util import ret
+from .util import checkParm, ret
 
 userProfile = Blueprint("user", __name__, url_prefix="/user")
 
@@ -29,7 +29,7 @@ def login():
 @userProfile.route("/sign", methods=["POST"])
 def sign():
     content = request.json
-    cond = ["account", "password", "age", "sex", "areaid", "name","degree"]
+    cond = ["account", "password", "age", "sex", "areaid", "name", "degree"]
     result = {"success": False, "message": ""}
     for i in cond:
         if(i not in content.keys()):
@@ -53,44 +53,42 @@ def findUserarea():
     return Response(json.dumps(data, cls=MyEncoder), mimetype="application/json")
 
 
-@userProfile.route("/<u_id>",methods=["GET"])
-def getUser(u_id):  
+@userProfile.route("/<u_id>", methods=["GET"])
+def getUser(u_id):
     return ret(userModel.user(u_id))
-    
 
-@userProfile.route("/",methods=["POST"])
+
+@userProfile.route("/", methods=["POST"])
 def user():
-    content=request.json
+    content = request.json
     return ret(userModel.user(content["user_id"]))
 
 
-@userProfile.route("/", methods=["PUT"])
+@userProfile.route("/psw", methods=["POST"])
 def edit():
     content = request.json
+    print(content)
     cond = ["account", "oldPassword", "password", "passwordConfire"]
     result = {"success": False, "message": ""}
-    
-    for i in cond:
-        if(i not in content.keys()):
-            result["message"] += "缺少必要參數 %s\n" % i
-    if(result["message"] == ""):
-        oldPasswordFromDB = userModel.findPasswordByAccount(content["account"])
+    t = checkParm(cond, content)
+
+    if(isinstance(t, dict)):
+        oldPasswordFromDB = userModel.findPasswordByAccount(
+            content["account"], t["oldPassword"])
+        print(oldPasswordFromDB)
         if(oldPasswordFromDB["success"]):
             oldPasswordFromDB = oldPasswordFromDB["data"]
-            if(len(oldPasswordFromDB) == 1):
-                oldPasswordFromDB = oldPasswordFromDB[0]["password"].decode()
-                if(oldPasswordFromDB):
-                    if(oldPasswordFromDB != content["oldPassword"]):
-                        result["message"] += "輸入舊密碼錯誤\n"
-                    if(content["password"] != content["passwordConfire"]):
-                        result["message"] += "密碼和確認密碼不同\n"
-                    if(result["message"] == ""):
-                        data = userModel.changePassword(
-                            content["account"], content["password"])
-                        result["message"] = "更換密碼成功"
-                        result["data"] = data
+            if(len(oldPasswordFromDB) > 0):
+                if(content["password"] != content["passwordConfire"]):
+                    result["message"] += "密碼和確認密碼不同\n"
+                if(result["message"] == ""):
+                    data = userModel.changePassword(
+                        content["account"], content["password"])
+                    result["message"] = "更換密碼成功"
+                    result["success"] = True
+                    result["data"] = data
             elif(len(oldPasswordFromDB) == 0):
-                result["message"] = "帳號不存在"
+                result["message"] = "輸入舊密碼錯誤"
             else:
                 result["message"] = "帳號異常"
     return Response(json.dumps(result, cls=MyEncoder), mimetype='application/json')
@@ -100,7 +98,7 @@ def edit():
 def changeProfile():
     content = request.json
     account = content["account"]
-    cond = ["gender", "area_id"]
+    cond = [ "area_id","name"]
     data = {}
     for i in cond:
         if(i in content.keys()):
