@@ -8,8 +8,8 @@ def login(account, password):
     return (DB.execution(DB.select, sqlstr))
 
 
-def findPasswordByAccount(account):
-    sqlstr = f"select password from user where id=\"{account}\""
+def findPasswordByAccount(account, psw):
+    sqlstr = f"select * from user where id=\"{account}\" and password=md5(\"{psw}\")"
     return DB.execution(DB.select, sqlstr)
 
 
@@ -91,40 +91,42 @@ def user(user_id):
         data["data"]["policy_vote"], ["c_name"], "id")
 
     msg = []
-    proposal_id = data["data"]["msg"][0]["proposal_id"]
-    m_id = data["data"]["msg"][0]["id"]
-    title = ""
-    item = {}
-    m = []
-    c_name = set()
-    f_name = set()
-    for i in data["data"]["msg"]:
-        if i["proposal_id"] != proposal_id:
-            if proposal_id != -1:
-                item["content"] = m
-                item["c_name"] = c_name
-                item["f_name"] = f_name
-                item["proposal_id"] = i["proposal_id"]
-                item["title"] = i["title"]
-                c_name = set()
-                f_name = set()
-                msg.append(item)
-                item = {}
-                m = []
-            proposal_id = i["proposal_id"]
-        if(m_id != i["id"]):
-            m_id = i["id"]
-            m.append({"content": i["content"], "time": i["time"],
-                      "postive": i["postive"], "id": i["id"]})
-        c_name.add(i["c_name"])
-        f_name.add(i["f_name"])
-    item["content"] = m
-    item["c_name"] = c_name
-    item["f_name"] = f_name
-    item["proposal_id"] = i["proposal_id"]
-    item["title"] = i["title"]
-    msg.append(item)
-    data["data"]["msg"] = msg
+    print()
+    if len(data["data"]["msg"]) > 0:
+        proposal_id = data["data"]["msg"][0]["proposal_id"]
+        m_id = data["data"]["msg"][0]["id"]
+        title = ""
+        item = {}
+        m = []
+        c_name = set()
+        f_name = set()
+        for i in data["data"]["msg"]:
+            if i["proposal_id"] != proposal_id:
+                if proposal_id != -1:
+                    item["content"] = m
+                    item["c_name"] = c_name
+                    item["f_name"] = f_name
+                    item["proposal_id"] = i["proposal_id"]
+                    item["title"] = i["title"]
+                    c_name = set()
+                    f_name = set()
+                    msg.append(item)
+                    item = {}
+                    m = []
+                proposal_id = i["proposal_id"]
+            if(m_id != i["id"]):
+                m_id = i["id"]
+                m.append({"content": i["content"], "time": i["time"],
+                          "postive": i["postive"], "id": i["id"]})
+            c_name.add(i["c_name"])
+            f_name.add(i["f_name"])
+        item["content"] = m
+        item["c_name"] = c_name
+        item["f_name"] = f_name
+        item["proposal_id"] = i["proposal_id"]
+        item["title"] = i["title"]
+        msg.append(item)
+        data["data"]["msg"] = msg
 
     return data
 
