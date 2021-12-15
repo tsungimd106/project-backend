@@ -26,10 +26,12 @@ def pList(data):
                     strCond += " "+i+" in "+conds[:len(conds)-1]+")"+" and"
     page = int(data["page"]) if data["page"] != None else 0
     sqlstr = [{"sql": "".join([
-        "select p.*,s.status ,pc.category_id,f.name,IFNULL(goodc,0) as good ,ifnull(medc,0) as med ,ifnull(badc,0) as bad  ",
+        "select p.*,s.status ,pc.category_id,f.name,IFNULL(goodc,0) as good ,ifnull(medc,0) as med ,ifnull(badc,0) as bad ,c.name as c_name ",
         "from proposal as p join `status`  as s on p.status_id=s.id ",
         f" join (select * from proposal group by id having term =10  { ' and ' + strCond[0:len(strCond)-3] if len(strCond) > 0 else ''} limit {page*20},20) as t  on p.id=t.id ",
         " left join proposal_category as pc on p.id=pc.propsoal_id ",
+        
+        " left join category as c on pc.category_id=c.id ",
 
         " left join proposer as er on p.id=er.proposal_id ",
         " left join politician as po on po.id=er.politician_id ",
@@ -39,7 +41,9 @@ def pList(data):
         {"sql": f"select count(*)/20 as n from proposal as p where term=10 {'and'+strCond[0:len(strCond)-3] if len(strCond) > 0 else ''}  ",
          "name": "page"}]
     rows = DB.execution(DB.select, sqlstr)
-    result = group(rows["data"]["list"], ["name"], "id")
+    result = group(rows["data"]["list"], ["name","c_name"], "id")
+    
+
     return ({"data": {"list": result, "page": math.ceil(rows["data"]["page"][0]["n"]), }, "success": True})
 
 
@@ -47,7 +51,6 @@ def msg(account, mes, article_id, parent_id):
     try:
         s = SnowNLP(mes)
         sqlstr = f"insert into message(user_id,content,proposal_id,parent_id,postive) values(\"{account}\",\"{mes}\",\"{article_id}\",{0 if parent_id==None else parent_id},\"{s.sentiments}\");"
-
 
     except ValueError:
         sqlstr = f"insert into message(user_id,content,proposal_id,parent_id) values(\"{account}\",\"{mes}\",\"{article_id}\",{0 if parent_id==None else parent_id});"
