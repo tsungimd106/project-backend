@@ -18,8 +18,8 @@ def changePassword(account, password):
     return DB.execution(DB.update, sqlstr)
 
 
-def sign(account, password, age, gender, area, name, degree):
-    sqlstr = f"insert into user(id, password,birthday,gender,area_id,name,degree) VALUES (\"{account}\", md5(\"{password}\") ,\"{age}\" ,\"{gender}\",\"{area}\",\"{name}\",\"{degree}\")"
+def sign(account, password, age, gender, area, name, degree,phone):
+    sqlstr = f"insert into user(id, password,birthday,gender,area_id,name,degree,phone) VALUES (\"{account}\", md5(\"{password}\") ,\"{age}\" ,\"{gender}\",\"{area}\",\"{name}\",\"{degree}\",\"{phone}\")"
     return DB.execution(DB.create, sqlstr)
 
 

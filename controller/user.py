@@ -18,12 +18,12 @@ def login():
     data = userModel.login(account, password)
     result = {"success": False, "data": data}
     if len(data["data"]) == 1:
-        result["message"] = "登入成功"
+        result["mes"] = "登入成功"
         result["success"] = True
     elif len(data["data"]) == 0:
-        result["message"] = "登入失敗"
+        result["mes"] = "登入失敗"
     else:
-        result["message"] = "登入異常"
+        result["mes"] = "登入異常"
 
     return ret(result)
 
@@ -31,18 +31,18 @@ def login():
 @userProfile.route("/sign", methods=["POST"])
 def sign():
     content = request.json
-    cond = ["account", "password", "age", "sex", "areaid", "name", "degree"]
-    result = {"success": False, "message": ""}
+    cond = ["account", "password", "age", "sex", "areaid", "name", "degree","phone"]
+    result = {"success": False, "mes": ""}
     t = checkParm(cond, content)
 
     if(isinstance(t, dict)):
         data = userModel.sign(t["account"], t["password"],
-                              t["age"], t["sex"], t["areaid"], t["name"], t["degree"])
+                              t["age"], t["sex"], t["areaid"], t["name"], t["degree"],t["phone"])
         if(data["success"]):
-            result["message"] = "註冊成功"
+            result["mes"] = "註冊成功"
             result["success"] = True
         else:
-            result["message"] = "註冊異常"
+            result["mes"] = "註冊異常"
     return ret(result)
 
 
@@ -62,7 +62,7 @@ def edit():
     content = request.json
     print(content)
     cond = ["account", "oldPassword", "password", "passwordConfire"]
-    result = {"success": False, "message": ""}
+    result = {"success": False, "mes": ""}
     t = checkParm(cond, content)
 
     if(isinstance(t, dict)):
@@ -73,17 +73,17 @@ def edit():
             oldPasswordFromDB = oldPasswordFromDB["data"]
             if(len(oldPasswordFromDB) > 0):
                 if(content["password"] != content["passwordConfire"]):
-                    result["message"] += "密碼和確認密碼不同\n"
-                if(result["message"] == ""):
+                    result["mes"] += "密碼和確認密碼不同\n"
+                if(result["mes"] == ""):
                     data = userModel.changePassword(
                         content["account"], content["password"])
-                    result["message"] = "更換密碼成功"
+                    result["mes"] = "更換密碼成功"
                     result["success"] = True
                     result["data"] = data
             elif(len(oldPasswordFromDB) == 0):
-                result["message"] = "輸入舊密碼錯誤"
+                result["mes"] = "輸入舊密碼錯誤"
             else:
-                result["message"] = "帳號異常"
+                result["mes"] = "帳號異常"
     return ret(result)
 
 
@@ -97,10 +97,10 @@ def changeProfile():
         if(i in content.keys()):
             data[i] = content[i]
     data = userModel.changeProfile(data, account)
-    result = {"success": False, "message": "修改異常", "data": data}
+    result = {"success": False, "mes": "修改異常", "data": data}
     if(data["success"]):
         result["success"] = True
-        result["message"] = "修改成功"
+        result["mes"] = "修改成功"
     return ret(result)
 
 
