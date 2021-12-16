@@ -174,11 +174,14 @@ def politician_user(p_id):
 
             "SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel,pa.name as p_name,e.name as e_n,e.remark"
             + " FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id join party as pa on p.party_id=pa.id"
-            + f" where p.id=\" {p_id} \" order by e.area_id,p.term,f.name",              "name": "detail"
-        }, {
+            + f" where p.id=\" {p_id} \" order by e.area_id,p.term,f.name","name": "detail"
+        },{
             "sql": "".join(["SELECT * FROM count_score where  id =\"", p_id, "\""]), "name":"count_score"
-        }, {
-
+        },{
+            "sql": "SELECT * FROM db.policy_top where politician_id={p_id} limit 3",
+            "name": "policy"
+        },{
+            "sql":f"SELECT * FROM db.proposal_top where id={p_id} limit 3","name":"proposal"
         }
     ]
     return DB.execution(DB.select, sqlstr)

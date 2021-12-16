@@ -4,12 +4,12 @@ import time
 import os
 time1=time.time()
 
-# DFA演算法
 class DFAFilter():
     def __init__(self):
         self.keyword_chains = {}
         self.delimit = '\x00'
 
+    #生成敏感詞tree
     def add(self, keyword):
         keyword = keyword.lower()
         chars = keyword.strip()
@@ -31,6 +31,7 @@ class DFAFilter():
         if i == len(chars) - 1:
             level[self.delimit] = 0
 
+    #讀取敏感詞庫:sensitive.txt
     def parse(self):
         THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
         my_file = os.path.join(THIS_FOLDER, 'sensitive.txt')
@@ -38,6 +39,7 @@ class DFAFilter():
             for keyword in f:
                 self.add(str(keyword).strip())
 
+    #過濾不雅詞
     def filter(self, message, repl="*"):
         message = message.lower()
         ret = []
