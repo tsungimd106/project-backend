@@ -15,17 +15,15 @@ proposalAPI = Blueprint("proposal", __name__, url_prefix="/proposal")
 def find():
     cond = ["id", "term",  "status_id", "title"]
     content = request.args
-    after = normalize_query(content)   
-    condData={}
+    after = normalize_query(content)
+    condData = {}
     for i in after.keys():
         if i in cond:
-            condData[i]=after[i]
-    data={}
-    data["cond"]=condData
-    data["page"]=after["page"] if "page" in after.keys() else 0
+            condData[i] = after[i]
+    data = {}
+    data["cond"] = condData
+    data["page"] = after["page"] if "page" in after.keys() else 0
     # for i in cond:
-    
-    
 
     return ret(proposalModel.pList(data))
 
@@ -37,15 +35,15 @@ def msg():
     cond = ["user_id", "content", "article_id", "parent_id"]
     t = checkParm(cond, content)
     if(isinstance(t, dict)):
-        gfw = DFAFilter()        
+        gfw = DFAFilter()
         gfw.parse()
-        text=content["content"]
+        text = content["content"]
         result = gfw.filter(text)
-        if len(str(content["content"]).replace("*",""))==len(str(result).replace("*","")):
+        if len(str(content["content"]).replace("*", "")) == len(str(result).replace("*", "")):
             data = proposalModel.msg(
-            account=content[cond[0]], mes=content[cond[1]], article_id=content[cond[2]], parent_id=content[cond[3]])
+                account=content[cond[0]], mes=content[cond[1]], article_id=content[cond[2]], parent_id=content[cond[3]])
         else:
-            data = {"success": False, "mes": "請確認是否有不雅字詞出現"}    
+            data = {"success": False, "mes": "請確認是否有不雅字詞出現"}
     else:
         data = {"success": False, "mes": t}
     return ret(data)
@@ -112,15 +110,30 @@ def rule():
 def cond():
     return ret(proposalModel.getCond())
 
-@proposalAPI.route("/great",methods=["POST"])
-def great():
-    checkParm(["user_id","m_id"])
-    sqlstr=""
 
-@proposalAPI.route("/great",methods=["DELETE"])
+@proposalAPI.route("/great", methods=["POST"])
+def great():
+    checkParm(["user_id", "m_id"])
+    sqlstr = ""
+
+
+@proposalAPI.route("/great", methods=["DELETE"])
 def removeGreat(m_id):
-    sqlstr=f"select * from great where id={m_id}"
-@proposalAPI.route("/great",methods=["GET"])
+    sqlstr = f"select * from great where id={m_id}"
+
+
+@proposalAPI.route("/great", methods=["GET"])
 def getGreat():
     checkParm(["m_id"])
     return ""
+
+
+@proposalAPI.route("/save/del", methods=["POST"])
+def removeSave():
+    content = request.json
+    cond = ["user_id", "proposal_id"]
+    t = checkParm(cond, content)
+    if(isinstance(t, dict)):
+        return ret(proposalModel.removeSave(t["user_id"], t["proposal_id"]))
+    else:
+        return ret({"success": False, "message": t})

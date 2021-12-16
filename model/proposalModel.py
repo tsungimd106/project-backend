@@ -30,7 +30,7 @@ def pList(data):
         "from proposal as p join `status`  as s on p.status_id=s.id ",
         f" join (select * from proposal group by id having term =10  { ' and ' + strCond[0:len(strCond)-3] if len(strCond) > 0 else ''} limit {page*20},20) as t  on p.id=t.id ",
         " left join proposal_category as pc on p.id=pc.propsoal_id ",
-        
+
         " left join category as c on pc.category_id=c.id ",
 
         " left join proposer as er on p.id=er.proposal_id ",
@@ -41,8 +41,7 @@ def pList(data):
         {"sql": f"select count(*)/20 as n from proposal as p where term=10 {'and'+strCond[0:len(strCond)-3] if len(strCond) > 0 else ''}  ",
          "name": "page"}]
     rows = DB.execution(DB.select, sqlstr)
-    result = group(rows["data"]["list"], ["name","c_name"], "id")
-    
+    result = group(rows["data"]["list"], ["name", "c_name"], "id")
 
     return ({"data": {"list": result, "page": math.ceil(rows["data"]["page"][0]["n"]), }, "success": True})
 
@@ -68,30 +67,47 @@ def vote(userid, sp_id, proposal_id):
 
 def msgList(proposal_id, user_id):
     sqlstr = [
-        {"sql": f"select m.*,u.name from message as m  join user as u on m.user_id=u.id where proposal_id=\"{proposal_id}\"", "name": "msg"},
+        {"sql": "select * from rule", "name": "rule"},      
         {"sql":
-         "".join([
-             "select p.id,p.title,p.pdfUrl ,s.status,f.name from proposal as p ",
-             " left join proposer as er on er.proposal_id=p.id ",
-             " left join politician as polit on polit.id=er.politician_id ",
-             " left join figure as f on polit.figure_id=f.id ",
-             " left join status as s on p.status_id=s.id ",
-             " left join proposal_category as pc on p.id=pc.propsoal_id "
-
-             f"where   p.id=\"{proposal_id}\" "
+         " ".join([
+             "select m.*,u.name , not isnull(r.user_id) as 'risk' ,not isnull(pa.user_id) as 'isFigure' from message as m ",
+             " join user as u on m.user_id=u.id ",
+             " left join risk as r on u.id=r.user_id ",
+             " left join politician_account as pa on u.id=pa.user_id ",
+             f"where proposal_id=\"{proposal_id}\""
 
          ]),
-            "name": "detail"},
+            "name": "msg"
+         },
         {
-            "sql": f"select * from favorite where user_id=\"{proposal_id}\" and proposal_id=\"{user_id}\"",
-            "name": "heart"}, {"sql": "select * from rule", "name": "rule"},
+            "sql":
+            " ".join([
+                "select p.id,p.title,p.pdfUrl ,s.status,f.name as f_name ,c.name as c_name from proposal as p ",
+                " left join proposer as er on er.proposal_id=p.id ",
+                " left join politician as polit on polit.id=er.politician_id ",
+                " left join figure as f on polit.figure_id=f.id ",
+                " left join status as s on p.status_id=s.id ",
+                " left join proposal_category as pc on p.id=pc.propsoal_id ",
+                " left join category as c on pc.category_id=c.id "
+                f" where   p.id=\"{proposal_id}\" "
+
+            ]),
+            "name": "detail"
+        },
+        {
+            "sql":
+            f"select * from favorite where user_id=\"{user_id}\" and proposal_id=\"{proposal_id}\"",
+            "name": "heart"
+        },
+
         {
             "sql": f"SELECT * FROM db.proposal_vote where id=\"{proposal_id}\"",
             "name": "vote"
         }
     ]
     rows = DB.execution(DB.select, sqlstr)
-    rows["data"]["detail"] = group(rows["data"]["detail"], ["name"], "id")
+    rows["data"]["detail"] = group(rows["data"]["detail"], [
+                                   "f_name", "c_name"], "id")
     return rows
 
 
@@ -108,6 +124,11 @@ def getSave(user_id):
 def save(user_id, proposal_id):
     sqlstr = f"insert into favorite( user_id,proposal_id) values(\"{user_id}\",\"{proposal_id}\");"
     return DB.execution(DB.create, sqlstr)
+
+
+def removeSave(user_id, proposal_id):
+    sqlstr = f"delete from favorite where user_id ='{user_id}' and proposal_id='{proposal_id}'"
+    return DB.execution(DB.delete, sqlstr)
 
 
 def report(user_id, message_id, remark, rule):

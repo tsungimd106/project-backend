@@ -42,7 +42,7 @@ class DB():
             if connection.is_connected():                
                 cursor = connection.cursor(dictionary=True)
                 if(isinstance(sqlstr, list)):
-                    if(type == DB.create or type == DB.update):
+                    if(type in [DB.create,DB.update,DB.delete]):
                         for i in sqlstr:
                             cursor.execute(i["sql"])
                         connection.commit()
@@ -60,7 +60,7 @@ class DB():
                             result[sqlstrItem["name"]] = rows
                         return {"success": True, "data": result}
                 else:
-                    if(type == DB.create or type == DB.update):
+                    if(type in [DB.create,DB.update,DB.delete]):
                         cursor.execute(sqlstr)
                         connection.commit()
                         return {"success": True}
