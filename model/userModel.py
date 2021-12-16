@@ -62,8 +62,7 @@ def user(user_id):
                 "left join proposal_category as pc on p.id=pc.propsoal_id ",
                 "left join category as c on pc.category_id=c.id ",
                 " left join db.proposal_vote as pv on pv.id=p.id "
-                "where user_id= \"",
-                user_id, "\" group by p.id,er.politician_id,c_name "
+                f"where user_id= \"{user_id}\"", " group by p.id,er.politician_id,c_name "
             ])),
 
             "name": "save"},
@@ -174,18 +173,18 @@ def politician_user(p_id):
 
             "SELECT p.id,p.term,f.name,p.photo,a.name as a_n,p.experience,p.degree,p.tel,pa.name as p_name,e.name as e_n,e.remark"
             + " FROM db.politician as p join electorate as e on p.electorate_id=e.id join figure as f on p.figure_id=f.id join area as a on e.area_id=a.id join party as pa on p.party_id=pa.id"
-            + f" where p.id=\" {p_id} \" order by e.area_id,p.term,f.name","name": "detail"
-        },{
+            + f" where p.id=\" {p_id} \" order by e.area_id,p.term,f.name", "name": "detail"
+        }, {
             "sql": "".join(["SELECT * FROM count_score where  id =\"", p_id, "\""]), "name":"count_score"
-        },{
-            "sql": "SELECT * FROM db.policy_top where politician_id={p_id} limit 3",
+        }, {
+            "sql": f"SELECT * FROM db.policy_top where politician_id={p_id} limit 3",
             "name": "policy"
         },{
             "sql":f"SELECT * FROM db.proposal_top where id={p_id} limit 3","name":"proposal"
         },{
-            "sql":f"select sum(postive)/count(*) from message as m join proposal as p on m.proposal_id=p.id join proposer as er on p.id=er.proposal_id where er.politician_id={p_id}","name":"message"
+            "sql":f"select sum(postive)/count(*) as score from message as m join proposal as p on m.proposal_id=p.id join proposer as er on p.id=er.proposal_id where er.politician_id={p_id}","name":"message"
         },{
-            "sql":f"select s.*,count(s.id) from user_proposal as up join proposal as p on p.id =up.proposal_id join proposer as er on er.proposal_id=p.id right join stand as s on stand_id=s.id where er.politician_id={p_id} group by s.id","name":"stand"
+            "sql":f"select s.*,count(s.id) as score from user_proposal as up join proposal as p on p.id =up.proposal_id join proposer as er on er.proposal_id=p.id right join stand as s on stand_id=s.id where er.politician_id={p_id} group by s.id","name":"stand"
         }
     ]
     return DB.execution(DB.select, sqlstr)
