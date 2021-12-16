@@ -112,3 +112,8 @@ def c():
         return ret(userModel.setCateogry(t["user_id"], t["add"], t["remove"]))
     else:
         return ret({"success": False, "mes": t})
+
+@userProfile.route("/p_user/<p_id>",methods=["GET"])
+def p_user(p_id):
+    return ret(userModel.politician_user(p_id))
+    
