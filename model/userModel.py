@@ -182,6 +182,10 @@ def politician_user(p_id):
             "name": "policy"
         },{
             "sql":f"SELECT * FROM db.proposal_top where id={p_id} limit 3","name":"proposal"
+        },{
+            "sql":f"select sum(postive)/count(*) from message as m join proposal as p on m.proposal_id=p.id join proposer as er on p.id=er.proposal_id where er.politician_id={p_id}","name":"message"
+        },{
+            "sql":f"select s.*,count(s.id) from user_proposal as up join proposal as p on p.id =up.proposal_id join proposer as er on er.proposal_id=p.id right join stand as s on stand_id=s.id where er.politician_id={p_id} group by s.id","name":"stand"
         }
     ]
     return DB.execution(DB.select, sqlstr)
