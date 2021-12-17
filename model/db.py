@@ -18,6 +18,9 @@ class DB():
     @property
     def delete(self):
         return 3
+    @property
+    def store_p(self):
+        return 5
 
     __host = '140.131.114.148'
     __user = 'root'
@@ -27,37 +30,50 @@ class DB():
 
     @staticmethod
     def execution(type, sqlstr):
+        print(sqlstr)
         try:
             connection = mysql.connector.connect(
                 host=DB.__host,
                 database=DB.__dbname,
                 user=DB.__user,
                 password=DB.__password,
-                charset="utf8")
-            if connection.is_connected():
-                # 顯示資料庫版本
-                # db_Info = connection.get_server_info()
-                # print("資料庫版本：", db_Info)
-                # 執行傳入的sql 指令
+                charset="utf8",
+                )
+            if connection.is_connected():                
                 cursor = connection.cursor(dictionary=True)
                 if(isinstance(sqlstr, list)):
-                    result = []
-                    for sqlstrItem in sqlstr:                        
-                        cursor.execute(sqlstrItem["sql"])
-                        rows = cursor.fetchall()
-                        result.append(
-                            {"name": sqlstrItem["name"], "data": rows})
-                    return {"success": True, "data": result}
+                    if(type in [DB.create,DB.update,DB.delete]):
+                        for i in sqlstr:
+                            cursor.execute(i["sql"])
+                        connection.commit()
+                        return{"success": True}
+                    elif(type==DB.store_p):
+                        cursor.callproc(sqlstr["name"], sqlstr["arg"])                     
+                        resD=cursor.stored_results()
+                        connection.commit()
+                        return{"success": True,"data":resD}
+                    else:
+                        result = {}
+                        for sqlstrItem in sqlstr:
+                            cursor.execute(sqlstrItem["sql"])
+                            rows = cursor.fetchall()
+                            result[sqlstrItem["name"]] = rows
+                        return {"success": True, "data": result}
                 else:
-                    if(type == DB.create or type == DB.update):
+                    if(type in [DB.create,DB.update,DB.delete]):
                         cursor.execute(sqlstr)
                         connection.commit()
                         return {"success": True}
+                    elif(type==DB.store_p):
+                        cursor.callproc(sqlstr["name"], sqlstr["arg"])                     
+                        resD=cursor.stored_results()
+                        connection.commit()
+                        print(resD)
+                        return{"success": True,"data":f"{resD}"}
                     else:
                         cursor.execute(sqlstr)
                         rows = cursor.fetchall()
                         return {"success": True, "data": rows}
-
                 cursor.close()
                 connection.close()
                 print("enter close")

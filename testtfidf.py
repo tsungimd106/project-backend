@@ -1,7 +1,8 @@
-# -*- coding:utf-8 -*-
+# -*- coding: utf-8 -*-
 from re import M
 from model.db import DB
-import xiangshi as xs
+import jieba.analyse
+import jieba
 
 # 政見分類
 # 從資料庫裡抓取政見
@@ -23,28 +24,23 @@ def returnCategory(policy_id, category_id):
         policy_id, category_id)
     return DB.execution(DB.create, sqlstr)
 
+
 # 待匯入完畢後跑迴圈
 policy = findPolicy()
 category = findCategory()
 
+
 # 分類與政見逐條比對
 print(category)
+print('==============')
+for cate in category["data"]:
+    print(cate["name"])
 for j in category["data"]:
-    m = [j["name"]]
-    print('第1個元素:', j)
-
+    m = j["name"]
+    # print()
+    #print('第1個元素:', j)
     for i in policy["data"]:
-        n = [i["content"].decode(encoding='utf-8', errors='ignore')]  # 政見
+        n = i["content"].decode(encoding='utf-8', errors='ignore')  # 政見
         s = i["content"]
-
-        result = xs.cossim(m, n)
-        
-
-        print(result>0.1)
-        print(result)
-        if result > 0.1:
-            print(n)
-            print("enter")
-            returnCategory(i["id"],j["id"])
-            print("end")
-
+        keywords = jieba.analyse.extract_tags(n, topK=20, withWeight=True, allowPOS=('n', 'nr', 'ns'))
+        print(keywords)
