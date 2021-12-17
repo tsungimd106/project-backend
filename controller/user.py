@@ -31,18 +31,26 @@ def login():
 @userProfile.route("/sign", methods=["POST"])
 def sign():
     content = request.json
-    cond = ["account", "password", "age", "sex", "areaid", "name", "degree","phone"]
+    cond = ["account", "password", "age", "sex",
+            "areaid", "name", "degree", "phone"]
     result = {"success": False, "mes": ""}
     t = checkParm(cond, content)
 
     if(isinstance(t, dict)):
         data = userModel.sign(t["account"], t["password"],
-                              t["age"], t["sex"], t["areaid"], t["name"], t["degree"],t["phone"])
+                              t["age"], t["sex"], t["areaid"], t["name"], t["degree"], t["phone"])
         if(data["success"]):
             result["mes"] = "註冊成功"
             result["success"] = True
         else:
-            result["mes"] = "註冊異常"
+            hasUser = userModel.hasUser(t["account"])["data"][0]["c"]
+            if hasUser > 0:
+                result["mes"] = f"註冊異常 - 重複帳號"
+            else:
+                result["mes"] = "註冊異常"
+
+    else:
+        result["mes"] = "請填畢所有資料"
     return ret(result)
 
 

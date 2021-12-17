@@ -43,7 +43,7 @@ def findUserarea(area):
 
 
 def hasUser(userid):
-    sqlstr = f"select count(*) from user where id=\"{userid}\""
+    sqlstr = f"select count(*) as c from user where id=\"{userid}\""
     return DB.execution(DB.select, sqlstr)
 
 
@@ -179,14 +179,14 @@ def politician_user(p_id):
         }, {
             "sql": f"SELECT * FROM db.policy_top where politician_id={p_id} limit 3",
             "name": "policy"
-        },{
-            "sql":f"SELECT * FROM db.proposal_top where id={p_id} limit 3","name":"proposal"
-        },{
-            "sql":f"select sum(postive)/count(*) as score from message as m join proposal as p on m.proposal_id=p.id join proposer as er on p.id=er.proposal_id where er.politician_id={p_id}","name":"message"
-        },{
-            "sql":f"select s.*,count(s.id) from user_proposal as up join proposal as p on p.id =up.proposal_id join proposer as er on er.proposal_id=p.id right join stand as s on stand_id=s.id where er.politician_id={p_id} group by s.id","name":"stand"
-        },{
-            "sql" :f"SELECT le.committee_id,le.politician_id,com.name FROM db.legislatorcol as le join politician as p on le.politician_id = p.id join committee as com on le.committee_id=com.id where politician_id = {p_id} group by politician_id","name":"committee"
+        }, {
+            "sql": f"SELECT * FROM db.proposal_top where id={p_id} limit 3", "name": "proposal"
+        }, {
+            "sql": f"select sum(postive)/count(*) as score from message as m join proposal as p on m.proposal_id=p.id join proposer as er on p.id=er.proposal_id where er.politician_id={p_id}", "name": "message"
+        }, {
+            "sql": f"select s.*,count(s.id)  as score from user_proposal as up join proposal as p on p.id =up.proposal_id join proposer as er on er.proposal_id=p.id right join stand as s on stand_id=s.id where er.politician_id={p_id} group by s.id", "name": "stand"
+        }, {
+            "sql": f"SELECT le.committee_id,le.politician_id,com.name FROM db.legislatorcol as le join politician as p on le.politician_id = p.id join committee as com on le.committee_id=com.id where politician_id = {p_id} group by politician_id", "name": "committee"
         }
     ]
     return DB.execution(DB.select, sqlstr)
